@@ -1,0 +1,12 @@
+{
+  "name": "console-engine",
+  "version": "0.5.0",
+  "description": "game engine for console",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "author": "GachiLord",
+  "license": "MIT"
+}
