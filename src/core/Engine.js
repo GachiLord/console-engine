@@ -1,22 +1,18 @@
-import events from "./events.js";
+import events from "./events/engineEvents.js";
+import sleep from "../lib/sleep.js";
+import engineEvents from "./events/engineEvents.js";
 
 export default class Engine{
-    #frameTime
 
-    constructor(frameTime = 100){
-        this.#frameTime = frameTime
+    constructor(){
 
         // create a viewUpdate listener
-        events.on('update', async (view) => {
+        engineEvents.on('update', async (view) => {
             console.clear()
             console.log(view)
             // emit an event when rendering is complete
-            events.emit('updated')
+            engineEvents.emit('updated')
         })
-    }
-    
-    #sleep(ms){
-        return new Promise(resolve => setTimeout(resolve, ms));
     }
     
     /**
@@ -30,9 +26,12 @@ export default class Engine{
      * @param {string} view
      * @returns {Promise<void>}
      */
-    async render(view){
-        events.emit('update', view)
-        await this.#sleep(this.#frameTime)
-        events.emit('rendered')
+    async render(view, frameTime = 100){
+        engineEvents.emit('update', view)
+        await sleep(frameTime)
+        engineEvents.emit('rendered')
+    }
+    distruct(){
+        console.clear()
     }
 }
