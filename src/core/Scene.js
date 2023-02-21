@@ -1,6 +1,10 @@
 import Engine from "./Engine.js"
-import sceneEvents from "./events/sceneEvents.js"
 import Sprite from "./Sprite.js"
+import { EventEmitter } from 'node:events';
+
+
+class SceneEvents extends EventEmitter {}
+const sceneEvents = new SceneEvents()
 
 export default class Scene{
     #layers = []
@@ -156,7 +160,7 @@ export default class Scene{
             }
         }
         this.#layers[level].push(sprite)
-        sprite.setScene(this.#layers)
+        sprite.setScene(this.#layers, sceneEvents)
         this.update()
     }
 
@@ -173,7 +177,10 @@ export default class Scene{
     remove(sprite){
         this.#layers.forEach( layer => {
             layer.forEach( (item, i) => {
-                if (sprite === item) layer.splice(i, 1)
+                if (sprite === item) {
+                    layer.splice(i, 1)
+                    sprite.setScene(undefined, undefined)
+                }
             } )
         } )
     }

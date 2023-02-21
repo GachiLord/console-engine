@@ -1,11 +1,26 @@
-import events from "./events/engineEvents.js";
 import sleep from "../lib/sleep.js";
-import engineEvents from "./events/engineEvents.js";
+import { EventEmitter } from 'node:events';
+import * as readline from 'node:readline';
+
+
+// events
+class EngineEvents extends EventEmitter {}
+const engineEvents = new EngineEvents()
+// prepare console
+readline.emitKeypressEvents(process.stdin);
+if (process.stdin.setRawMode != null) {
+  process.stdin.setRawMode(true);
+}
+
 
 export default class Engine{
 
     constructor(){
-
+        // keypress listener
+        process.stdin.on('keypress', (str, key) => {
+            if (key && key.name === 'c' && key.ctrl) process.exit()
+            engineEvents.emit('keypress', str, key)
+          })
         // create a viewUpdate listener
         engineEvents.on('update', async (view) => {
             console.clear()
@@ -33,5 +48,9 @@ export default class Engine{
     }
     distruct(){
         console.clear()
+    }
+
+    getEvents(){
+        return engineEvents
     }
 }

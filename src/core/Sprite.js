@@ -1,21 +1,24 @@
-import sceneEvents from "./events/sceneEvents.js"
 import sleep from "../lib/sleep.js"
 import { randomUUID } from 'crypto'
 import EventEmitter from "events"
 import { AddError } from '../errors/sprite.js'
 
 
-const spriteEvents = class SpriteEvents extends EventEmitter{}
+class SpriteEvents extends EventEmitter{}
 
 export default class Sprite{
-    _sceneEvents = sceneEvents
-    _spriteEvents = new spriteEvents()
+    _sceneEvents
+    _spriteEvents = new SpriteEvents()
     #id = randomUUID()
     _scene
     _state = {
         show: true,
         coor: {x: 0, y: 0},
         sprite: '#'
+    }
+    _abilities = {
+        canMove: true,
+        canChangeView: true,
     }
 
     /**
@@ -50,8 +53,9 @@ export default class Sprite{
      * @param {any} scene
      * @returns {void}
      */
-    setScene(scene){
+    setScene(scene, events){
         this._scene = scene
+        this._sceneEvents = events
     }
 
     /**
@@ -67,7 +71,7 @@ export default class Sprite{
      * @returns {Promise<void>}
      */
     async updateState(props, speedCoef = 1){
-        if (!this._scene) throw new AddError()
+        if (!this._scene || !this._sceneEvents) throw new AddError()
 
         this._state = {...this._state, ...props}
         this._sceneEvents.emit('update')
@@ -101,28 +105,24 @@ export default class Sprite{
      * @returns {Promise<void>}
      */
     async goStraight(endCoor, axis = 'x', speedCoef = 1){
-        // add listener and going state var
-        let isGoing = true
-        const setIsGoingToFalse = () => {
-            isGoing = false
-        }
-        this._spriteEvents.once('stopGoing', setIsGoingToFalse)
         // move sprite
         let coor = this._state.coor
         let startCoor = coor[axis]
         const directionCoef = endCoor > startCoor ? 1: -1
         
-        while (startCoor !== endCoor && isGoing){
+
+        // get to coor if there is no stopGoing command
+        while (startCoor !== endCoor && this._abilities.canMove){
             startCoor += directionCoef
             coor[axis] = startCoor
             await this.updateState({coor: coor}, speedCoef)
         }
-        // remove listener
-        this._spriteEvents.removeListener('stopGoing', setIsGoingToFalse)
+        // reset ability flag
+        this._abilities.canMove = true
     }
 
     stopGoing(){
-        this.trigger('stopGoing')
+        this._abilities.canMove = false
     }
 
     /**
