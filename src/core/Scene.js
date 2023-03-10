@@ -9,7 +9,9 @@ const sceneEvents = new SceneEvents()
 export default class Scene{
     #layers = []
     #engine
-    _resolution
+    #map
+    #engineEvents 
+    #resolution
     #renderHandler
     /**
      * A function that is called when a new instance of the class is created.
@@ -19,7 +21,8 @@ export default class Scene{
      */
     constructor(resolution = {width: 50, height: 10}, renderHandler){
         this.#engine = new Engine()
-        this._resolution = resolution
+        this.#engineEvents = this.#engine.getEvents()
+        this.#resolution = resolution
         this.#renderHandler = renderHandler
 
         sceneEvents.on('update', () => {
@@ -27,6 +30,9 @@ export default class Scene{
         })
         sceneEvents.on('distruct', () => {
             // remove scene
+        })
+        this.#engineEvents.on('keypress', (...args) => {
+            sceneEvents.emit('keypress', ...args)
         })
     }
 
@@ -36,8 +42,8 @@ export default class Scene{
      */
     #compose(){
         let view = []
-        let width = this._resolution.width
-        let height = this._resolution.height
+        let width = this.#resolution.width
+        let height = this.#resolution.height
         // create blank win
         for (let i = height; i > 0; i--) view.push([])
         view.forEach( item => {
@@ -55,9 +61,6 @@ export default class Scene{
         const setCharByCoors = (coors, char, owners) => {
             view[coors.y][coors.x] = {char: char, owners: new Set(owners)}
         }
-        const addOwnerByCoors = (coors, owner) => {
-            view[coors.y][coors.x].owners.add(owner)
-        }
         const setLocality = (coors, owner) => {
             // const char = getCharByCoors(coors)
             let localCharCoors = {x: coors.x, y: coors.y + 1}
@@ -74,7 +77,6 @@ export default class Scene{
                         }
                         )
                     }
-                    // if (localChar.char === ' ') addOwnerByCoors(localCharCoors, owner)
                 }
             }
             emitOrAdd()
@@ -91,8 +93,16 @@ export default class Scene{
             localChar = getCharByCoors(localCharCoors)
             emitOrAdd()
         }
+        // add gameMap
+        if (this.#map){
+            this.#map.forEach( (item, index) => {
+                item.forEach( (jtem, jndex) => {
+                    view[index][jndex] = {char: jtem, owners: new Set()}
+                } )
+            } )
+        }
         // add sprites
-        this.#layers.reverse().forEach( layer => {
+        this.#layers.forEach( layer => {
             layer.forEach( item => {
                 if (!item.getState().show) return
                 let coor = item.getState().coor
@@ -160,7 +170,7 @@ export default class Scene{
             }
         }
         this.#layers[level].push(sprite)
-        sprite.setScene(this.#layers, sceneEvents)
+        sprite.setScene(this, this.#layers, sceneEvents)
         this.update()
     }
 
@@ -197,5 +207,16 @@ export default class Scene{
     clear(){
         this.#layers = []
         this.update()
+    }
+
+    logDubugInfo(data){
+        this.#engine.setDebugInfo(data)
+        this.update()
+    }
+    setMap(map){
+        this.#map = map.getMap()
+    }
+    removeMap(){
+        this.#map = undefined
     }
 }

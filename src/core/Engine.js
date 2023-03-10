@@ -14,17 +14,22 @@ if (process.stdin.setRawMode != null) {
 
 
 export default class Engine{
+    #debugInfo
 
     constructor(){
         // keypress listener
         process.stdin.on('keypress', (str, key) => {
-            if (key && key.name === 'c' && key.ctrl) process.exit()
+            if (key && key.name === 'c' && key.ctrl) {
+                console.log('Bye bye :)')
+                process.exit()
+            }
             engineEvents.emit('keypress', str, key)
-          })
+        })
         // create a viewUpdate listener
         engineEvents.on('update', async (view) => {
             console.clear()
             console.log(view)
+            if (this.#debugInfo) console.log(this.#debugInfo)
             // emit an event when rendering is complete
             engineEvents.emit('updated')
         })
@@ -43,7 +48,7 @@ export default class Engine{
      */
     async render(view, frameTime = 100){
         engineEvents.emit('update', view)
-        await sleep(frameTime)
+        if (frameTime > 0) await sleep(frameTime) 
         engineEvents.emit('rendered')
     }
     distruct(){
@@ -52,5 +57,9 @@ export default class Engine{
 
     getEvents(){
         return engineEvents
+    }
+
+    setDebugInfo(info){
+        this.#debugInfo = info
     }
 }

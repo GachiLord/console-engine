@@ -1,30 +1,52 @@
 import Scene from "./core/Scene.js";
-import Srite from './core/Sprite.js'
+import Sprite from "./core/Sprite.js";
+import GameMap from "./core/GameMap.js";
+
+// let gameIsGoing = true
+// const scene = new Scene(undefined)
+// const sharp1 = new Player({x:4, y:4}, `#`)
+// const floor = new Sprite({x: 0, y: 5}, '='.repeat(50))
+// const enemy1 = new Sprite({x: 51, y: 4}, '*')
+// // score
+// const getScore = (n) => `score: ${n}`
+// let totalScore = 0
+// const score = new Sprite({x: 0, y: 7}, getScore(totalScore))
+// // adds
+// scene.add(sharp1, 1)
+// scene.add(floor, 0)
+// scene.add(enemy1, 1)
+// scene.add(score, 0)
+
+// // add listener for collision
+// enemy1.on('collision', (e) => {
+//     if (e.sprites.includes(sharp1)){
+//         gameIsGoing = false
+//         enemy1.stopGoing()
+//     }
+    
+// })
+// // enemy1.on('collision', (e) => {
+// //     if (e.sprites.includes(enemy1)) process.exit()
+    
+// // })
+// let speed = 0.5
+// while(gameIsGoing){
+//     if (gameIsGoing) await enemy1.goStraight(-1, 'x', speed)
+//     if (gameIsGoing) await enemy1.updateState({coor: {x: 51, y: 4}}, 0)
+//     speed -= 0.01
+//     sharp1.setSpeed(speed)
+//     totalScore++
+//     score.updateState({sprite: getScore(totalScore)}, 0)
+// }
 
 
-const sharp1 = new Srite({x:0, y:0}, `# #\n---`)
-const sharp2 = new Srite({x:10, y:0}, `***`)
-async function cirleMove(sprite){
-    let canGo = true
-    sprite.on('collision', (e) => { sprite.stopGoing(); canGo = false; })
-    while (canGo){
-        if (canGo) await sprite.goto({x: 15, y:0}, 1)
-        if (canGo) await sprite.goto({x: 0, y:0}, 1)
-    }
-}
-async function sideBySideMove(sprite){
-    let canGo = true
-    //sprite.on('collision', (e) => { sprite.stopGoing(); canGo = false })
-    while (canGo){
-        if (canGo) await sprite.goStraight(10, 'x', 1)
-        if (canGo) await sprite.goStraight(0, 'x', 1)
-    }
-}
-const scene = new Scene({width: 50, height: 10})
-scene.add(sharp1, 0)
-scene.add(sharp2, 1)
+const scene = new Scene()
+const sharp1 = new Sprite({x: 0, y: 0})
+const map = new GameMap(
+    `dsa             dasdsa\nffas;          asf     \nfas;lfa                \n`,
+    sharp1
+    )
 
-cirleMove(sharp1)
-sideBySideMove(sharp2)
-// sharp1.goStraight(10, 'x')
-// sharp2.goStraight(0, 'x')
+scene.add(sharp1)
+scene.setMap(map)
+sharp1.goStraight(15, 'x')

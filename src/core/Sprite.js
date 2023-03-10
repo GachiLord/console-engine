@@ -11,6 +11,7 @@ export default class Sprite{
     _spriteEvents = new SpriteEvents()
     #id = randomUUID()
     _scene
+    _layers
     _state = {
         show: true,
         coor: {x: 0, y: 0},
@@ -34,6 +35,11 @@ export default class Sprite{
         this._state.coor = coor
         this._state.sprite = sprite
         this._state.show = show
+
+        // fire lifecycle events
+        this._spriteEvents.once('added', () => {
+            this.added()
+        })
     }
 
     on(eventName, callback = (e) => {}){
@@ -41,6 +47,10 @@ export default class Sprite{
     }
     trigger(eventName, data){
         this._spriteEvents.emit(eventName, data)
+    }
+
+    added(){
+
     }
 
     /**
@@ -53,9 +63,11 @@ export default class Sprite{
      * @param {any} scene
      * @returns {void}
      */
-    setScene(scene, events){
+    setScene(scene, layers, events){
         this._scene = scene
+        this._layers = layers
         this._sceneEvents = events
+        this._spriteEvents.emit('added')
     }
 
     /**
@@ -71,11 +83,11 @@ export default class Sprite{
      * @returns {Promise<void>}
      */
     async updateState(props, speedCoef = 1){
-        if (!this._scene || !this._sceneEvents) throw new AddError()
+        if (!this._scene || !this._sceneEvents || !this._layers) throw new AddError()
 
         this._state = {...this._state, ...props}
         this._sceneEvents.emit('update')
-        await sleep(speedCoef * 100)
+        if (speedCoef > 0) await sleep(speedCoef * 100)
     }
 
     /**
@@ -154,7 +166,7 @@ export default class Sprite{
      * @returns {void}
      */
     hide(){
-        this._state.show = false
+        this.updateState({show: false}, 0)
     }
 
     /**
@@ -167,6 +179,6 @@ export default class Sprite{
      * @returns {void}
      */
     show(){
-        this._state.show = true
+        this.updateState({show: true}, 0)
     }
 }
