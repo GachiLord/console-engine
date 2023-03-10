@@ -93,11 +93,11 @@ export default class Scene{
             localChar = getCharByCoors(localCharCoors)
             emitOrAdd()
         }
-        // add gameMap
+        // add game map
         if (this.#map){
-            this.#map.forEach( (item, index) => {
+            this.#map.getMap().forEach( (item, index) => {
                 item.forEach( (jtem, jndex) => {
-                    view[index][jndex] = {char: jtem, owners: new Set()}
+                    view[index][jndex] = {char: jtem, owners: new Set([this.#map])}
                 } )
             } )
         }
@@ -140,7 +140,7 @@ export default class Scene{
     }
 
     /**
-     * Emitting an event that is listened to by the scene.
+     * Force update of the scene.
      * 
      * @method
      * @name update
@@ -209,14 +209,45 @@ export default class Scene{
         this.update()
     }
 
-    logDubugInfo(data){
+    /**
+     * A method that allows you to display debug information in the console.
+     * 
+     * @method
+     * @name log
+     * @kind method
+     * @memberof Scene
+     * @param {any} data
+     * @returns {void}
+     */
+    log(data){
         this.#engine.setDebugInfo(data)
         this.update()
     }
+    /**
+     * Setting the map of the scene.
+     * 
+     * @method
+     * @name setMap
+     * @kind method
+     * @memberof Scene
+     * @param {any} map
+     * @returns {void}
+     */
     setMap(map){
-        this.#map = map.getMap()
+        this.#map = map
+        this.update()
     }
+    /**
+     * Removing the map from the scene.
+     * 
+     * @method
+     * @name removeMap
+     * @kind method
+     * @memberof Scene
+     * @returns {void}
+     */
     removeMap(){
         this.#map = undefined
+        this.update()
     }
 }

@@ -37,20 +37,30 @@ export default class Sprite{
         this._state.show = show
 
         // fire lifecycle events
-        this._spriteEvents.once('added', () => {
-            this.added()
-        })
+        this._spriteEvents.once('added', this.added)
+        this._spriteEvents.on('update', this.updated)
     }
 
     on(eventName, callback = (e) => {}){
         this._spriteEvents.on(eventName, callback)
     }
+    
+    once(eventName, callback = (e) => {}){
+        this._spriteEvents.once(eventName, callback)
+    }
+
     trigger(eventName, data){
         this._spriteEvents.emit(eventName, data)
     }
 
     added(){
 
+    }
+
+    updated = () =>{
+        if (this._scene){
+            this._scene.log(this._state.coor)
+        }
     }
 
     /**
@@ -87,6 +97,7 @@ export default class Sprite{
 
         this._state = {...this._state, ...props}
         this._sceneEvents.emit('update')
+        this._spriteEvents.emit('update', props)
         if (speedCoef > 0) await sleep(speedCoef * 100)
     }
 

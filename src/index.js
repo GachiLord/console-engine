@@ -1,6 +1,7 @@
 import Scene from "./core/Scene.js";
 import Sprite from "./core/Sprite.js";
 import GameMap from "./core/GameMap.js";
+import Player from './assets/Player.js'
 
 // let gameIsGoing = true
 // const scene = new Scene(undefined)
@@ -43,10 +44,19 @@ import GameMap from "./core/GameMap.js";
 const scene = new Scene()
 const sharp1 = new Sprite({x: 0, y: 0})
 const map = new GameMap(
-    `dsa             dasdsa\nffas;          asf     \nfas;lfa                \n`,
+    [`dsa             dasdsa`,
+     `ffas;          asf     `,
+     `fas;lfa                `,
+    ].join('\n'),
     sharp1
     )
 
 scene.add(sharp1)
 scene.setMap(map)
-sharp1.goStraight(15, 'x')
+
+while(true){
+    await sharp1.goStraight(15, 'x')
+    await sharp1.goStraight(0, 'x')
+    await sharp1.goStraight(5, 'y')
+    await sharp1.goStraight(0, 'y')
+}

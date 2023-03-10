@@ -20,4 +20,12 @@ export default class GameMap{
 
         return map
     }
+
+    setView(view){
+        this.#view = view
+    }
+
+    setOrigin(originSprite){
+        this.#originSprite = originSprite
+    }
 }
