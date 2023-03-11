@@ -29,7 +29,7 @@ export default class Engine{
         engineEvents.on('update', async (view) => {
             console.clear()
             console.log(view)
-            if (this.#debugInfo) console.log(this.#debugInfo)
+            if (this.#debugInfo !== undefined ) console.log(this.#debugInfo)
             // emit an event when rendering is complete
             engineEvents.emit('updated')
         })
@@ -61,5 +61,9 @@ export default class Engine{
 
     setDebugInfo(info){
         this.#debugInfo = info
+    }
+
+    exit(){
+        process.exit()
     }
 }

@@ -36,9 +36,9 @@ export default class Sprite{
         this._state.sprite = sprite
         this._state.show = show
 
-        // fire lifecycle events
-        this._spriteEvents.once('added', this.added)
-        this._spriteEvents.on('update', this.updated)
+        // listen for lifecycle events
+        this._spriteEvents.on('added', () => { this.added() })
+        this._spriteEvents.on('update', () => { this.updated })
     }
 
     on(eventName, callback = (e) => {}){
@@ -57,10 +57,8 @@ export default class Sprite{
 
     }
 
-    updated = () =>{
-        if (this._scene){
-            this._scene.log(this._state.coor)
-        }
+    updated = () => {
+
     }
 
     /**
@@ -114,6 +112,10 @@ export default class Sprite{
         return this._state
     }
 
+    getAbilities(){
+        return this._abilities
+    }
+
     /**
      * moving the sprite only in one direction
      * 
@@ -141,11 +143,15 @@ export default class Sprite{
             await this.updateState({coor: coor}, speedCoef)
         }
         // reset ability flag
-        this._abilities.canMove = true
+        //this._abilities.canMove = true
     }
 
-    stopGoing(){
+    disableGoing(){
         this._abilities.canMove = false
+    }
+
+    enableGoing(){
+        this._abilities.canMove = true
     }
 
     /**

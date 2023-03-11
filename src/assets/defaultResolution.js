@@ -1,0 +1,1 @@
+export default {width: 50, height: 10}

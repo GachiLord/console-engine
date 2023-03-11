@@ -1,6 +1,7 @@
 import Engine from "./Engine.js"
 import Sprite from "./Sprite.js"
 import { EventEmitter } from 'node:events';
+import defaultResolution from "../assets/defaultResolution.js";
 
 
 class SceneEvents extends EventEmitter {}
@@ -19,7 +20,7 @@ export default class Scene{
      * @constructor
      * @name Scene
      */
-    constructor(resolution = {width: 50, height: 10}, renderHandler){
+    constructor(resolution = defaultResolution, renderHandler){
         this.#engine = new Engine()
         this.#engineEvents = this.#engine.getEvents()
         this.#resolution = resolution
@@ -73,7 +74,8 @@ export default class Scene{
                         owner.trigger('collision', 
                         {
                             target: owner,
-                            sprites: new Array(...localChar.owners)
+                            sprites: new Array(...localChar.owners),
+                            char: localChar.char
                         }
                         )
                     }
@@ -249,5 +251,9 @@ export default class Scene{
     removeMap(){
         this.#map = undefined
         this.update()
+    }
+
+    exit(){
+        this.#engine.exit()
     }
 }
