@@ -8,18 +8,13 @@ describe('assets', function(){
         const bar = new Bar()
 
         it('Should work for positive values(10)', function(){
-            equal(bar.getBar(10), '[########                                        ]')
+            equal(bar.getBar(10), '[##########                                        ]')
         })
-        it('Should work for negative values(-5)', function(){
-            equal(bar.getBar(-5), '[                                                ]')
+        it('Should work for value = 0', function(){
+            equal(bar.getBar(0), '[                                                  ]')
         })
-        it('Should work for negative length(-45)', function(){
-            bar.length = -45
-            equal(bar.getBar(35), '[]')
-        })
-        it('Should work for positive length(50)', function(){
-            bar.length = 50
-            equal(bar.getBar(0), '[                                                ]')
+        it('Should work when length(50) < value', function(){
+            equal(bar.getBar(70), '[##################################################]')
         })
     })
 })

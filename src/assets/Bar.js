@@ -1,4 +1,5 @@
 import Sprite from "../core/Sprite.js";
+import { InvalidValue } from "../errors/index.js";
 import defaultResolution from "./defaultResolution.js";
 
 export default class Bar extends Sprite{
@@ -30,13 +31,16 @@ export default class Bar extends Sprite{
     }
 
     getBar(value){
-        if (value <= 1) value = 2
-        if (this.length < 0) {
-            this.length = 0
-            value = 2
-        }
+        // validate values
+        if (this.length < 0) throw new InvalidValue('length must be positive')
+        if (value < 0) throw new InvalidValue('value must be positive')
+        // get bar
         let delta = this.length - value
-        if (delta < 0) delta = 0
-        return this.view.leftBracket + this.view.symb.repeat(value - 2) + ' '.repeat(delta) + this.view.rightBracket
+        if (delta < 0) {
+            delta = 0
+            value = this.length
+        }
+        
+        return this.view.leftBracket + this.view.symb.repeat(value) + ' '.repeat(delta) + this.view.rightBracket
     }
 }

@@ -1,7 +1,7 @@
 import sleep from "../lib/sleep.js"
 import { randomUUID } from 'crypto'
 import EventEmitter from "events"
-import { AddError } from '../errors/sprite.js'
+import { AddError } from '../errors/index.js'
 
 
 class SpriteEvents extends EventEmitter{}
