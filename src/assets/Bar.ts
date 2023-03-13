@@ -1,3 +1,4 @@
+import { Coor } from "../core/interfaces.js";
 import Sprite from "../core/Sprite.js";
 import { InvalidValue } from "../errors/index.js";
 import defaultResolution from "./defaultResolution.js";
@@ -5,16 +6,18 @@ import defaultResolution from "./defaultResolution.js";
 export default class Bar extends Sprite{
 
     #defaultValue
+    length: number;
+    view: { leftBracket: string; rightBracket: string; symb: string; };
+    description: string;
 
-    constructor(coor,
+    constructor(coor: Coor,
                 description = '',
                 length = defaultResolution.width, 
                 defaultValue = 0, 
                 view = { leftBracket: '[', rightBracket: ']', symb: '#' },
-                show = true
                 )
     {
-        super(coor, show)
+        super(coor)
         this.length = length
         this.#defaultValue = defaultValue
         this.view = view
@@ -26,11 +29,11 @@ export default class Bar extends Sprite{
         this.updateValue(this.#defaultValue)
     }
 
-    updateValue(value, speedCoef = 0){
+    updateValue(value: number, speedCoef = 0){
         this.updateState({sprite: this.description + ' ' + this.getBar(value)}, speedCoef)
     }
 
-    getBar(value){
+    getBar(value: number){
         // validate values
         if (this.length < 0) throw new InvalidValue('length must be positive')
         if (value < 0) throw new InvalidValue('value must be positive')

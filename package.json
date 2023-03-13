@@ -4,13 +4,19 @@
   "description": "game engine for console",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
   "type": "module",
   "author": "GachiLord",
   "license": "MIT",
   "devDependencies": {
-    "mocha": "^10.2.0"
+    "@tsconfig/node16": "^1.0.3",
+    "@types/node": "^18.15.0",
+    "mocha": "^10.2.0",
+    "typescript": "^4.9.5"
   },
   "dependencies": {
     "colors": "^1.4.0"

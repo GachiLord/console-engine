@@ -1,7 +1,7 @@
 // scene
 
 export class PosError extends Error{
-    constructor(msg){
+    constructor(msg: string){
         super(msg)
         this.name = 'ReadError'
     }

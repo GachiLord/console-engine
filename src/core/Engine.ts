@@ -14,7 +14,7 @@ if (process.stdin.setRawMode != null) {
 
 
 export default class Engine{
-    #debugInfo
+    #debugInfo: any
 
     constructor(){
         // keypress listener
@@ -46,7 +46,7 @@ export default class Engine{
      * @param {string} view
      * @returns {Promise<void>}
      */
-    async render(view, frameTime = 100){
+    async render(view: string, frameTime = 100): Promise<void>{
         engineEvents.emit('update', view)
         if (frameTime > 0) await sleep(frameTime) 
         engineEvents.emit('rendered')
@@ -59,7 +59,7 @@ export default class Engine{
         return engineEvents
     }
 
-    setDebugInfo(info){
+    setDebugInfo(info: any){
         this.#debugInfo = info
     }
 

@@ -1,3 +1,4 @@
+import { Coor } from "../core/interfaces.js";
 import Sprite from "../core/Sprite.js";
 
 export default class Player extends Sprite{
@@ -5,14 +6,17 @@ export default class Player extends Sprite{
     #speed = 1
     #defaultCoors
 
-    constructor(coor, view){
+    constructor(coor: Coor, view: string){
         super(coor, view)
 
         this.#defaultCoors = {...coor}
     }
 
     added(){
-        this._sceneEvents.on('keypress', async (key, data) => {
+        if (!this._sceneEvents) return;
+        
+        
+        this._sceneEvents.on('keypress', async (key) => {
             const curCoors = this._state.coor
             if (key === ' ') {
                 if (this.#onGround){
@@ -25,7 +29,7 @@ export default class Player extends Sprite{
         })
     }
 
-    setSpeed(speed){
+    setSpeed(speed: number){
         this.#speed = speed
     }
 

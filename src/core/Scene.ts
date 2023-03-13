@@ -1,16 +1,18 @@
 import Engine from "./Engine.js"
-import Sprite from "./Sprite.js"
 import { EventEmitter } from 'node:events';
 import defaultResolution from "../assets/defaultResolution.js";
+import { Coor } from "./interfaces.js";
+import Sprite from "./Sprite.js";
+import GameMap from "./GameMap.js";
 
 
 class SceneEvents extends EventEmitter {}
 const sceneEvents = new SceneEvents()
 
 export default class Scene{
-    #layers = []
+    #layers: Array<Array<Sprite>> = []
     #engine
-    #map
+    #map: GameMap|undefined
     #engineEvents 
     #resolution
     #renderHandler
@@ -20,7 +22,7 @@ export default class Scene{
      * @constructor
      * @name Scene
      */
-    constructor(resolution = defaultResolution, renderHandler){
+    constructor(resolution = defaultResolution, renderHandler: Function|undefined){
         this.#engine = new Engine()
         this.#engineEvents = this.#engine.getEvents()
         this.#resolution = resolution
@@ -42,16 +44,16 @@ export default class Scene{
      * 
      */
     #compose(){
-        let view = []
+        let view: any = []
         let width = this.#resolution.width
         let height = this.#resolution.height
         // create blank win
         for (let i = height; i > 0; i--) view.push([])
-        view.forEach( item => {
+        view.forEach( (item: { char: string; owners: Set<unknown>; }[]) => {
             for (let j = 0; j < width; j++) item.push({char: ' ', owners: new Set() })
         } )
         // helpers
-        const getCharByCoors = (coors) => {
+        const getCharByCoors = (coors: Coor) => {
             if (view[coors.y]) {
                 if (view[coors.y][coors.x]) {
                     return view[coors.y][coors.x]
@@ -59,10 +61,10 @@ export default class Scene{
             }
             return
         }
-        const setCharByCoors = (coors, char, owners) => {
+        const setCharByCoors = (coors: Coor, char: string, owners: Array<Sprite>) => {
             view[coors.y][coors.x] = {char: char, owners: new Set(owners)}
         }
-        const setLocality = (coors, owner) => {
+        const setLocality = (coors: Coor, owner: Sprite) => {
             // const char = getCharByCoors(coors)
             let localCharCoors = {x: coors.x, y: coors.y + 1}
             let localChar = getCharByCoors(localCharCoors)
@@ -123,7 +125,7 @@ export default class Scene{
             } )
         } )
         // make view a string
-        view = view.map( item => {
+        view = view.map( (item: any[]) => {
             return item.map( jtem => {
                 return jtem.char
             } ).join('')
@@ -150,7 +152,7 @@ export default class Scene{
      * @memberof Scene
      * @returns {void}
      */
-    update(){
+    update(): void{
         sceneEvents.emit('update')
     }
 
@@ -165,7 +167,7 @@ export default class Scene{
      * @param {number} level?
      * @returns {void}
      */
-    add(sprite, level = 0){
+    add(sprite: Sprite, level: number = 0): void{
         if (this.#layers.length <= level) {
             for (let i = level - this.#layers.length + 1; i > 0; i--){
                 this.#layers.push([])
@@ -186,12 +188,12 @@ export default class Scene{
      * @param {Sprite} sprite
      * @returns {void}
      */
-    remove(sprite){
+    remove(sprite: Sprite): void{
         this.#layers.forEach( layer => {
             layer.forEach( (item, i) => {
                 if (sprite === item) {
                     layer.splice(i, 1)
-                    sprite.setScene(undefined, undefined)
+                    sprite.setScene(undefined, undefined, undefined)
                 }
             } )
         } )
@@ -206,7 +208,7 @@ export default class Scene{
      * @memberof Scene
      * @returns {void}
      */
-    clear(){
+    clear(): void{
         this.#layers = []
         this.update()
     }
@@ -221,7 +223,7 @@ export default class Scene{
      * @param {any} data
      * @returns {void}
      */
-    log(data){
+    log(data: any): void{
         this.#engine.setDebugInfo(data)
         this.update()
     }
@@ -235,7 +237,7 @@ export default class Scene{
      * @param {any} map
      * @returns {void}
      */
-    setMap(map){
+    setMap(map: any): void{
         this.#map = map
         this.update()
     }
@@ -248,7 +250,7 @@ export default class Scene{
      * @memberof Scene
      * @returns {void}
      */
-    removeMap(){
+    removeMap(): void{
         this.#map = undefined
         this.update()
     }

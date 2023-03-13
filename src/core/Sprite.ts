@@ -2,17 +2,20 @@ import sleep from "../lib/sleep.js"
 import { randomUUID } from 'crypto'
 import EventEmitter from "events"
 import { AddError } from '../errors/index.js'
+import Scene from "./Scene.js"
+import { Coor, SpriteState } from "./interfaces.js"
 
 
 class SpriteEvents extends EventEmitter{}
 
+
 export default class Sprite{
-    _sceneEvents
+    _sceneEvents: EventEmitter|undefined
     _spriteEvents = new SpriteEvents()
     #id = randomUUID()
-    _scene
-    _layers
-    _state = {
+    _scene: Scene|undefined
+    _layers: Array<Array<Sprite>>|undefined
+    _state: SpriteState = {
         show: true,
         coor: {x: 0, y: 0},
         sprite: '#'
@@ -31,25 +34,25 @@ export default class Sprite{
      * @param {string} sprite view of the sprite
      * @param {boolean} show show sprite or not
      */
-    constructor(coor, sprite = '#', show = true){
+    constructor(coor: Coor, sprite: string = '#', show: boolean = true){
         this._state.coor = coor
         this._state.sprite = sprite
         this._state.show = show
 
         // listen for lifecycle events
         this._spriteEvents.on('added', () => { this.added() })
-        this._spriteEvents.on('update', () => { this.updated })
+        this._spriteEvents.on('update', () => { this.updated() })
     }
 
-    on(eventName, callback = (e) => {}){
+    on(eventName: string, callback = (e:any) => {}){
         this._spriteEvents.on(eventName, callback)
     }
     
-    once(eventName, callback = (e) => {}){
+    once(eventName: string, callback = (e:any) => {}){
         this._spriteEvents.once(eventName, callback)
     }
 
-    trigger(eventName, data){
+    trigger(eventName: string, data:any){
         this._spriteEvents.emit(eventName, data)
     }
 
@@ -71,7 +74,7 @@ export default class Sprite{
      * @param {any} scene
      * @returns {void}
      */
-    setScene(scene, layers, events){
+    setScene(scene: Scene|undefined, layers: Array<Array<Sprite>>|undefined, events: EventEmitter|undefined): void{
         this._scene = scene
         this._layers = layers
         this._sceneEvents = events
@@ -90,7 +93,7 @@ export default class Sprite{
      * @param {number} speedCoef?
      * @returns {Promise<void>}
      */
-    async updateState(props, speedCoef = 1){
+    async updateState(props: object, speedCoef: number = 1): Promise<void>{
         if (!this._scene || !this._sceneEvents || !this._layers) throw new AddError()
 
         this._state = {...this._state, ...props}
@@ -108,7 +111,7 @@ export default class Sprite{
      * @memberof Sprite
      * @returns {{ show: boolean; coor: { x: number; y: number; }; sprite: string; }}
      */
-    getState(){
+    getState(): { show: boolean; coor: { x: number; y: number }; sprite: string }{
         return this._state
     }
 
@@ -129,17 +132,19 @@ export default class Sprite{
      * @param {number} speedCoef frame update speed
      * @returns {Promise<void>}
      */
-    async goStraight(endCoor, axis = 'x', speedCoef = 1){
+    async goStraight(endCoor: number, axis: string = 'x', speedCoef: number = 1): Promise<void>{
         // move sprite
         let coor = this._state.coor
-        let startCoor = coor[axis]
+        // why I cant use js normally???
+        let key = axis as keyof typeof coor
+        let startCoor: number = coor[key]
         const directionCoef = endCoor > startCoor ? 1: -1
         
 
         // get to coor if there is no stopGoing command
         while (startCoor !== endCoor && this._abilities.canMove){
             startCoor += directionCoef
-            coor[axis] = startCoor
+            coor[key] = startCoor
             await this.updateState({coor: coor}, speedCoef)
         }
         // reset ability flag
@@ -166,7 +171,7 @@ export default class Sprite{
      * @param {any} speedCoef frame update speed
      * @returns {Promise<void>}
      */
-    async goto(coor, speedCoef){
+    async goto(coor: { x: number; y: number }, speedCoef: number = 1): Promise<void>{
         await Promise.all([
             this.goStraight(coor.x, 'x', speedCoef),
             this.goStraight(coor.y, 'y', speedCoef)
@@ -182,7 +187,7 @@ export default class Sprite{
      * @memberof Sprite
      * @returns {void}
      */
-    hide(){
+    hide(): void{
         this.updateState({show: false}, 0)
     }
 
@@ -195,7 +200,7 @@ export default class Sprite{
      * @memberof Sprite
      * @returns {void}
      */
-    show(){
+    show(): void{
         this.updateState({show: true}, 0)
     }
 }

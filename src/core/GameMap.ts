@@ -1,11 +1,13 @@
 import defaultResolution from "../assets/defaultResolution.js"
+import Sprite from "./Sprite.js"
+
 
 export default class GameMap{
     #view
     #originSprite
     #resolution
 
-    constructor(view, originSprite, resolution = defaultResolution){
+    constructor(view: string, originSprite: Sprite, resolution = defaultResolution){
         this.#view = view
         this.#originSprite = originSprite
         this.#resolution = resolution
@@ -13,8 +15,7 @@ export default class GameMap{
 
     getMap(){
         // make arr of view
-        let map = this.#view.split('\n')
-        map = map.map( i => i.split('') )
+        let map:Array<Array<string>> = this.#view.split('\n').map( i => i.split('') )
         // offset map acc origin sprite pos and resolution
         const origin = this.#originSprite.getState().coor
         map = map.slice(origin.y).slice(0, this.#resolution.height)
@@ -25,11 +26,11 @@ export default class GameMap{
         return map
     }
 
-    setView(view){
+    setView(view: string){
         this.#view = view
     }
 
-    setOrigin(originSprite){
+    setOrigin(originSprite: Sprite){
         this.#originSprite = originSprite
     }
 }
