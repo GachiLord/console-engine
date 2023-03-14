@@ -32,9 +32,9 @@ export default class Scene{
         sceneEvents.on('update', () => {
             this.#handleUpdate()
         })
-        sceneEvents.on('distruct', () => {
-            // remove scene
-        })
+        // sceneEvents.on('distruct', () => {
+        //     // remove scene
+        // })
         this.#engineEvents.on('keypress', (...args) => {
             sceneEvents.emit('keypress', ...args)
         })
@@ -251,6 +251,7 @@ export default class Scene{
     }
 
     exit(){
+        sceneEvents.emit('distruct')
         this.#engine.exit()
     }
 }
