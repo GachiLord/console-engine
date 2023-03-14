@@ -1,7 +1,7 @@
 import sleep from "../lib/sleep.js"
 import { randomUUID } from 'crypto'
 import EventEmitter from "events"
-import { AddError } from '../errors/index.js'
+import { AddError } from './errors.js'
 import Scene from "./Scene.js"
 import { Coor, SpriteState } from "./interfaces.js"
 
@@ -10,11 +10,11 @@ class SpriteEvents extends EventEmitter{}
 
 
 export default class Sprite{
-    _sceneEvents: EventEmitter|undefined
+    _sceneEvents: EventEmitter|any
     _spriteEvents = new SpriteEvents()
     #id = randomUUID()
-    _scene: Scene|undefined
-    _layers: Array<Array<Sprite>>|undefined
+    _scene: Scene|any
+    _layers: Array<Array<Sprite>>|any
     _state: SpriteState = {
         show: true,
         coor: {x: 0, y: 0},

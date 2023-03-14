@@ -48,5 +48,5 @@ while(gameIsGoing){
     totalScore++
     score.updateState({sprite: getScore(totalScore)}, 0)
     const newValue:number = Number(((0.5 - speed)).toFixed(2))
-    speedBar.updateValue( newValue * 100 )
+    speedBar.updateValue( Math.round(newValue * 100) )
 }

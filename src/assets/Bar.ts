@@ -1,6 +1,6 @@
 import { Coor } from "../core/interfaces.js";
 import Sprite from "../core/Sprite.js";
-import { InvalidValue } from "../errors/index.js";
+import { InvalidValue } from "../core/errors.js";
 import defaultResolution from "./defaultResolution.js";
 
 export default class Bar extends Sprite{

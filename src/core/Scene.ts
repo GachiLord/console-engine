@@ -4,6 +4,7 @@ import defaultResolution from "../assets/defaultResolution.js";
 import { Coor } from "./interfaces.js";
 import Sprite from "./Sprite.js";
 import GameMap from "./GameMap.js";
+import ViewBuilder from "../lib/ViewBuilder.js";
 
 
 class SceneEvents extends EventEmitter {}
@@ -125,13 +126,7 @@ export default class Scene{
             } )
         } )
         // make view a string
-        view = view.map( (item: any[]) => {
-            return item.map( jtem => {
-                return jtem.char
-            } ).join('')
-        } ).join('\n')
-
-        return view
+        return ViewBuilder.getAsString(view)
     }
 
     /**
