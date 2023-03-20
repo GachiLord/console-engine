@@ -5,6 +5,7 @@ import { Coor } from "./interfaces.js";
 import Sprite from "./Sprite.js";
 import GameMap from "./GameMap.js";
 import ViewBuilder from "../lib/ViewBuilder.js";
+import isUnicode from "../lib/isUnicode.js";
 
 
 class SceneEvents extends EventEmitter {}
@@ -115,7 +116,15 @@ export default class Scene{
                 // add sprite
                 const lines = sprite.split('\n')
                 lines.forEach( (line, y) => {
-                    line.split('').forEach((char, x) => {
+                    let curLine = []
+                    for (let i = 0; i < line.length; i++){
+                        if (isUnicode(line[i])) {
+                            curLine.push(line[i] + line[i+1])
+                            i+=2
+                        }
+                        else curLine.push(line[i])
+                    }
+                    curLine.forEach((char, x) => {
                         // add char if there is a place
                         const charCoors = {x: coor.x + x, y: coor.y + y}
                         // check touching

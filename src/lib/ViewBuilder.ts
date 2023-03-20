@@ -1,6 +1,22 @@
+import isUnicode from "./isUnicode.js"
+
 export default class ViewBuilder{
     static getAsArray(view: string){
-        return view.split('\n').map( i => i.split('') )
+        let lines:Array<Array<string>> = []
+        view.split('\n').forEach( line => {
+            let curLine = []
+            for (let i = 0; i < line.length; i++){
+                if (isUnicode(line[i])) {
+                    curLine.push(line[i] + line[i+1])
+                    i+=2
+                }
+                else curLine.push(line[i])
+            }
+            lines.push(curLine)
+        } )
+
+
+        return lines
     }
 
     static getAsString(viewArray: Array<Array<string>>){
