@@ -116,15 +116,7 @@ export default class Scene{
                 // add sprite
                 const lines = sprite.split('\n')
                 lines.forEach( (line, y) => {
-                    let curLine = []
-                    for (let i = 0; i < line.length; i++){
-                        if (isUnicode(line[i])) {
-                            curLine.push(line[i] + line[i+1])
-                            i+=2
-                        }
-                        else curLine.push(line[i])
-                    }
-                    curLine.forEach((char, x) => {
+                    ViewBuilder.getAsArray(line)[0].forEach((char, x) => {
                         // add char if there is a place
                         const charCoors = {x: coor.x + x, y: coor.y + y}
                         // check touching

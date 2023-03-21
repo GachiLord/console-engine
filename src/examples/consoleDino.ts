@@ -6,7 +6,7 @@ import Bar from "../assets/Bar.js";
 
 const scene = new Scene(undefined, undefined)
 const sharp1 = new Player({x:4, y:4}, '🦀')
-const floor = new Sprite({x: 0, y: 5}, '🌿'.repeat(50))
+const floor = new Sprite({x: 0, y: 5}, '🌿'.repeat(22))
 const enemy1 = new Sprite({x: 51, y: 4}, '🤬')
 const speedBar = new Bar({x: 0, y: 8}, 'speed', 30)
 // score

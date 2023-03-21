@@ -5,12 +5,16 @@ export default class ViewBuilder{
         let lines:Array<Array<string>> = []
         view.split('\n').forEach( line => {
             let curLine = []
-            for (let i = 0; i < line.length; i++){
-                if (isUnicode(line[i])) {
+            let i = 0
+            while( i < line.length){
+                if (isUnicode(line[i]) && isUnicode(line[i+1])) {
                     curLine.push(line[i] + line[i+1])
                     i+=2
                 }
-                else curLine.push(line[i])
+                else {
+                    curLine.push(line[i])
+                    i++
+                }
             }
             lines.push(curLine)
         } )
