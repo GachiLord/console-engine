@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto'
 import EventEmitter from "events"
 import { AddError } from './errors.js'
 import Scene from "./Scene.js"
-import { Coor, SpriteState } from "./interfaces.js"
+import { Coor, SpriteState, Style } from "./interfaces.js"
 
 
 class SpriteEvents extends EventEmitter{}
@@ -13,12 +13,14 @@ export default class Sprite{
     _sceneEvents: EventEmitter|any
     _spriteEvents = new SpriteEvents()
     #id = randomUUID()
+    _style: Style
     _scene: Scene|any
     _layers: Array<Array<Sprite>>|any
     _state: SpriteState = {
         show: true,
         coor: {x: 0, y: 0},
-        sprite: '#'
+        sprite: '#',
+        style: undefined
     }
     _abilities = {
         canMove: true,
@@ -34,10 +36,11 @@ export default class Sprite{
      * @param {string} sprite view of the sprite
      * @param {boolean} show show sprite or not
      */
-    constructor(coor: Coor, sprite: string = '#', show: boolean = true){
+    constructor(coor: Coor, sprite: string = '#', style: undefined|string|Array<Array<string>> = undefined, show: boolean = true){
         this._state.coor = coor
         this._state.sprite = sprite
         this._state.show = show
+        this._state.style = style
 
         // listen for lifecycle events
         this._spriteEvents.on('added', () => { this.added() })
@@ -111,7 +114,7 @@ export default class Sprite{
      * @memberof Sprite
      * @returns {{ show: boolean; coor: { x: number; y: number; }; sprite: string; }}
      */
-    getState(): { show: boolean; coor: { x: number; y: number }; sprite: string }{
+    getState(): SpriteState{
         return this._state
     }
 

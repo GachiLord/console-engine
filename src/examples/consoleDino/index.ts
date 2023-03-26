@@ -1,12 +1,12 @@
-import Scene from "../core/Scene.js";
-import Sprite from "../core/Sprite.js";
-import Player from '../assets/Player.js'
-import Bar from "../assets/Bar.js";
+import Scene from "../../core/Scene.js";
+import Sprite from "../../core/Sprite.js";
+import Player from './Player.js'
+import Bar from "../../assets/Bar.js";
 
 
-const scene = new Scene(undefined, undefined)
+const scene = new Scene()
 const sharp1 = new Player({x:4, y:4}, '🦀')
-const floor = new Sprite({x: 0, y: 5}, '🌿'.repeat(22))
+const floor = new Sprite({x: 0, y: 5}, '='.repeat(51), [ 'blue '.repeat(25).split(' ').slice(0,-1).concat('red '.repeat(25).split(' ')) ])
 const enemy1 = new Sprite({x: 51, y: 4}, '🤬')
 const speedBar = new Bar({x: 0, y: 8}, 'speed', 30)
 // score

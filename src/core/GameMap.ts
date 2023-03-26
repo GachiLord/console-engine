@@ -1,6 +1,6 @@
 import defaultResolution from "../assets/defaultResolution"
 import Sprite from "./Sprite"
-import { Map } from './interfaces'
+import { Map, View } from './interfaces'
 import ViewBuilder from "../lib/ViewBuilder"
 
 
@@ -17,7 +17,7 @@ export default class GameMap implements Map{
 
     getMap(){
         // make arr of view
-        let map:Array<Array<string>> = ViewBuilder.getAsArray(this.#view)
+        let map:View = ViewBuilder.getAsArray(this.#view)
         // offset map acc origin sprite pos and resolution
         const origin = this.#originSprite.getState().coor
         map = map.slice(origin.y).slice(0, this.#resolution.height)

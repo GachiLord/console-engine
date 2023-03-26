@@ -1,8 +1,9 @@
+import { View } from "../core/interfaces.js"
 import isUnicode from "./isUnicode.js"
 
 export default class ViewBuilder{
     static getAsArray(view: string){
-        let lines:Array<Array<string>> = []
+        let lines:View = []
         view.split('\n').forEach( line => {
             let curLine = []
             let i = 0
@@ -23,7 +24,7 @@ export default class ViewBuilder{
         return lines
     }
 
-    static getAsString(viewArray: Array<Array<string>>){
+    static getAsString(viewArray: View){
         return viewArray.map( (item: any[]) => {
             return item.map( jtem => {
                 return jtem.char

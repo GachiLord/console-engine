@@ -37,7 +37,7 @@
             "type": "node",
             "request": "launch",
             "name": "TS",
-            "program": "${workspaceFolder}/src/examples/consoleDino.ts",
+            "program": "${workspaceFolder}/src/examples/consoleDino/index.ts",
             "outFiles": ["${workspaceFolder}/dist/**/*.js"]
           }    
     ]

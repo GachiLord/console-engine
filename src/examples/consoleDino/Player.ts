@@ -1,5 +1,5 @@
-import { Coor } from "../core/interfaces.js";
-import Sprite from "../core/Sprite.js";
+import { Coor } from "../../core/interfaces.js";
+import Sprite from "../../core/Sprite.js";
 
 export default class Player extends Sprite{
     #onGround = true
@@ -7,7 +7,7 @@ export default class Player extends Sprite{
     #defaultCoors
 
     constructor(coor: Coor, view: string){
-        super(coor, view)
+        super(coor, view, undefined)
 
         this.#defaultCoors = {...coor}
     }
