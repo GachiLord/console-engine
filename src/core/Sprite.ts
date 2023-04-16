@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto'
 import EventEmitter from "events"
 import { AddError } from './errors.js'
 import Scene from "./Scene.js"
-import { Coor, SpriteState, Style } from "./interfaces.js"
+import { ICoor, ISpriteState, Style, Layer } from "./typing.js"
 
 
 class SpriteEvents extends EventEmitter{}
@@ -15,8 +15,8 @@ export default class Sprite{
     #id = randomUUID()
     _style: Style
     _scene: Scene|any
-    _layers: Array<Array<Sprite>>|any
-    _state: SpriteState = {
+    _layers: Array<Layer>|any
+    _state: ISpriteState = {
         show: true,
         coor: {x: 0, y: 0},
         sprite: '#',
@@ -36,7 +36,7 @@ export default class Sprite{
      * @param {string} sprite view of the sprite
      * @param {boolean} show show sprite or not
      */
-    constructor(coor: Coor, sprite: string = '#', style: undefined|string|Array<Array<string>> = undefined, show: boolean = true){
+    constructor(coor: ICoor, sprite: string = '#', style: undefined|Style = undefined, show: boolean = true){
         this._state.coor = coor
         this._state.sprite = sprite
         this._state.show = show
@@ -114,7 +114,7 @@ export default class Sprite{
      * @memberof Sprite
      * @returns {{ show: boolean; coor: { x: number; y: number; }; sprite: string; }}
      */
-    getState(): SpriteState{
+    getState(): ISpriteState{
         return this._state
     }
 
@@ -174,7 +174,7 @@ export default class Sprite{
      * @param {any} speedCoef frame update speed
      * @returns {Promise<void>}
      */
-    async goto(coor: { x: number; y: number }, speedCoef: number = 1): Promise<void>{
+    async goto(coor: ICoor, speedCoef: number = 1): Promise<void>{
         await Promise.all([
             this.goStraight(coor.x, 'x', speedCoef),
             this.goStraight(coor.y, 'y', speedCoef)

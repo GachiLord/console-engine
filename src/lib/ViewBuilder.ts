@@ -1,4 +1,4 @@
-import { View } from "../core/interfaces.js"
+import { View } from "../core/typing.js"
 import isUnicode from "./isUnicode.js"
 
 export default class ViewBuilder{

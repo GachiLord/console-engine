@@ -1,10 +1,10 @@
 import defaultResolution from "../assets/defaultResolution"
 import Sprite from "./Sprite"
-import { Map, View } from './interfaces'
+import { IMap, View } from './typing.js'
 import ViewBuilder from "../lib/ViewBuilder"
 
 
-export default class GameMap implements Map{
+export default class GameMap implements IMap{
     #view
     #originSprite
     #resolution

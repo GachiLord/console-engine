@@ -1,4 +1,4 @@
-import { Coor } from "../../core/interfaces.js";
+import { ICoor } from "../../core/typing.js";
 import Sprite from "../../core/Sprite.js";
 
 export default class Player extends Sprite{
@@ -6,7 +6,7 @@ export default class Player extends Sprite{
     #speed = 1
     #defaultCoors
 
-    constructor(coor: Coor, view: string){
+    constructor(coor: ICoor, view: string){
         super(coor, view, undefined)
 
         this.#defaultCoors = {...coor}

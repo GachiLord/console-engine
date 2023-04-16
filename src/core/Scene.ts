@@ -1,7 +1,7 @@
 import Engine from "./Engine.js"
 import { EventEmitter } from 'node:events';
 import defaultResolution from "../assets/defaultResolution.js";
-import { Coor, Style } from "./interfaces.js";
+import { ICoor, Style, Layer } from "./typing.js";
 import Sprite from "./Sprite.js";
 import GameMap from "./GameMap.js";
 import ViewBuilder from "../lib/ViewBuilder.js";
@@ -12,7 +12,7 @@ class SceneEvents extends EventEmitter {}
 const sceneEvents = new SceneEvents()
 
 export default class Scene{
-    #layers: Array<Array<Sprite>> = []
+    #layers: Array<Layer> = []
     #engine
     #map: GameMap|undefined
     #engineEvents 
@@ -55,7 +55,7 @@ export default class Scene{
             for (let j = 0; j < width; j++) item.push({char: ' ', owners: new Set() })
         } )
         // helpers
-        const getValueByCoors = (container: any, coors: Coor) => {
+        const getValueByCoors = (container: any, coors: ICoor) => {
             if (container[coors.y]){
                 if (container[coors.y][coors.x]){
                     return container[coors.y][coors.x]
@@ -63,19 +63,19 @@ export default class Scene{
             }
             return
         }
-        const getCharByCoors = (coors: Coor) => {
+        const getCharByCoors = (coors: ICoor) => {
             return getValueByCoors(view, coors)
         }
-        const getStyleValue = (style: Style, coors: Coor):string|undefined => {
+        const getStyleValue = (style: Style, coors: ICoor):string|undefined => {
             if (typeof style === 'string' || !style ) return style
             else {
                 if (style[coors.y]) return style[coors.y][coors.x]
             }
         }
-        const setCharByCoors = (coors: Coor, char: string, style: string|undefined, owners: Array<Sprite>) => {
+        const setCharByCoors = (coors: ICoor, char: string, style: string|undefined, owners: Array<Sprite>) => {
             view[coors.y][coors.x] = {char: getStyled(char, style), owners: new Set(owners)}
         }
-        const setLocality = (coors: Coor, owner: Sprite) => {
+        const setLocality = (coors: ICoor, owner: Sprite) => {
             // const char = getCharByCoors(coors)
             let localCharCoors = {x: coors.x, y: coors.y + 1}
             let localChar = getCharByCoors(localCharCoors)
@@ -126,8 +126,8 @@ export default class Scene{
                 let style = item.getState().style
                 // add sprite
                 const lines = sprite.split('\n')
-                lines.forEach( (line, y) => {
-                    ViewBuilder.getAsArray(line)[0].forEach((char, x) => {
+                lines.forEach( (line: string, y: number) => {
+                    ViewBuilder.getAsArray(line)[0].forEach((char: string, x: number) => {
                         // add char if there is a place
                         const charCoors = {x: coor.x + x, y: coor.y + y}
                         const charStyle = getStyleValue(style, {x: x, y: y})

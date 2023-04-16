@@ -1,16 +1,15 @@
-import { Coor } from "../core/interfaces.js";
+import { ICoor } from "../core/typing.js";
 import Sprite from "../core/Sprite.js";
 import { InvalidValue } from "../core/errors.js";
 import defaultResolution from "./defaultResolution.js";
 
 export default class Bar extends Sprite{
-
     #defaultValue
     length: number;
     view: { leftBracket: string; rightBracket: string; symb: string; };
     description: string;
 
-    constructor(coor: Coor,
+    constructor(coor: ICoor,
                 description = '',
                 length = defaultResolution.width, 
                 defaultValue = 0, 
