@@ -267,4 +267,8 @@ export default class Scene{
         sceneEvents.emit('distruct')
         this.#engine.exit()
     }
+
+    getResolution(){
+        return this.#resolution
+    }
 }
