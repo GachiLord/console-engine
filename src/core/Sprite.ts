@@ -47,16 +47,16 @@ export default class Sprite{
         this._spriteEvents.on('update', () => { this.updated() })
     }
 
-    on(eventName: string, callback = (e:any) => {}){
+    on(eventName: string, callback = (...e:any[]) => {}){
         this._spriteEvents.on(eventName, callback)
     }
     
-    once(eventName: string, callback = (e:any) => {}){
+    once(eventName: string, callback = (...e:any[]) => {}){
         this._spriteEvents.once(eventName, callback)
     }
 
-    trigger(eventName: string, data:any){
-        this._spriteEvents.emit(eventName, data)
+    trigger(eventName: string, ...data:any[]){
+        this._spriteEvents.emit(eventName, ...data)
     }
 
     added(){

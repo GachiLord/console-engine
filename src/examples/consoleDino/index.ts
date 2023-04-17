@@ -2,7 +2,9 @@ import Scene from "../../core/Scene.js";
 import Sprite from "../../core/Sprite.js";
 import Player from './Player.js'
 import Bar from "../../assets/Bar.js";
-import MsgBox from "../../assets/MsgBox.js";
+import Alert from "../../assets/Alert.js";
+
+
 
 
 const scene = new Scene()
@@ -10,7 +12,7 @@ const sharp1 = new Player({x:4, y:4}, '🦀')
 const floor = new Sprite({x: 0, y: 5}, '='.repeat(51), [ 'blue '.repeat(25).split(' ').slice(0,-1).concat('red '.repeat(25).split(' ')) ])
 const enemy1 = new Sprite({x: 51, y: 4}, '🤬')
 const speedBar = new Bar({x: 0, y: 8}, 'speed', 30)
-const alert = new MsgBox('What do you mean?')
+const alert = new Alert('Do you wanna leave?')
 // score
 const getScore = (n: number) => `score: ${n}`
 let totalScore = 0
@@ -25,14 +27,18 @@ scene.add(speedBar, 0)
 
 
 let speed: number = 0.5
-await alert.fire()
 // add listener for collision
 enemy1.on('collision', (e) => {
     if (e.sprites.includes(sharp1)){
         speed += 0.01
         totalScore--
     }
-    
+})
+// add listener for stop game
+scene.on('keypress', async (_: string, key: any) => {
+    if (key.name === 'escape') {
+        if (await alert.fire() === 0) scene.exit()
+    }
 })
 
 

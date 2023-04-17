@@ -85,7 +85,7 @@ export default class Scene{
             const emitOrAdd = () => {
                 if (localChar){
                     if (localChar.owners.size > 0 && !localChar.owners.has(owner) && localChar.char !== ' ') {
-                        owner.trigger('collision', 
+                        owner.trigger('collision',
                         {
                             target: owner,
                             sprites: new Array(...localChar.owners),
@@ -270,5 +270,17 @@ export default class Scene{
 
     getResolution(){
         return this.#resolution
+    }
+
+    on(eventName: string, callback = (...e:any[]) => {}){
+        sceneEvents.on(eventName, callback)
+    }
+    
+    once(eventName: string, callback = (...e:any[]) => {}){
+        sceneEvents.once(eventName, callback)
+    }
+
+    trigger(eventName: string, ...data:any[]){
+        sceneEvents.emit(eventName, ...data)
     }
 }
