@@ -20,8 +20,7 @@ export default class Engine{
         // keypress listener
         process.stdin.on('keypress', (str, key) => {
             if (key && key.name === 'c' && key.ctrl) {
-                console.log('Bye bye :)')
-                process.exit()
+                this.exit()
             }
             engineEvents.emit('keypress', str, key)
         })
@@ -29,6 +28,7 @@ export default class Engine{
         engineEvents.on('update', async (view) => {
             console.clear()
             console.log(view)
+            // log a dubug info
             if (this.#debugInfo !== undefined ) console.log(this.#debugInfo)
             // emit an event when rendering is complete
             engineEvents.emit('updated')
@@ -51,9 +51,6 @@ export default class Engine{
         if (frameTime > 0) await sleep(frameTime) 
         engineEvents.emit('rendered')
     }
-    distruct(){
-        console.clear()
-    }
 
     getEvents(){
         return engineEvents
@@ -63,7 +60,17 @@ export default class Engine{
         this.#debugInfo = info
     }
 
-    exit(){
+    exit(msg: any = undefined, clear: boolean = true){
+        if (msg) console.log(msg)
+        else if(clear) console.clear()
         process.exit()
+    }
+
+    stop(msg: any = undefined, clear: boolean = true){
+        engineEvents.removeAllListeners()
+        process.stdin.removeAllListeners()
+
+        if (msg) console.log(msg)
+        else if(clear) console.clear()
     }
 }

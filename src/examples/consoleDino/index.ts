@@ -3,10 +3,10 @@ import Sprite from "../../core/Sprite.js";
 import Player from './Player.js'
 import Bar from "../../assets/Bar.js";
 import Alert from "../../assets/Alert.js";
+import PromptSync from "prompt-sync";
 
 
-
-
+const prompt = PromptSync()
 const scene = new Scene()
 const sharp1 = new Player({x:4, y:4}, '🦀')
 const floor = new Sprite({x: 0, y: 5}, '='.repeat(51), [ 'blue '.repeat(25).split(' ').slice(0,-1).concat('red '.repeat(25).split(' ')) ])
@@ -36,8 +36,8 @@ enemy1.on('collision', (e) => {
 })
 // add listener for stop game
 scene.on('keypress', async (_: string, key: any) => {
-    if (key.name === 'escape') {
-        if (await alert.fire() === 0) scene.exit()
+    if (key.name === 'escape'){
+        if (prompt('Do you wanna leave?(y/n):') === 'y') scene.exit()
     }
 })
 

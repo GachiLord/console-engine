@@ -263,9 +263,13 @@ export default class Scene{
         this.update()
     }
 
-    exit(){
+    exit(msg: any = undefined, clear: boolean|undefined = true){
         sceneEvents.emit('distruct')
-        this.#engine.exit()
+        this.#engine.exit(msg, clear)
+    }
+
+    stop(msg: any = undefined, clear: boolean|undefined = true){
+        this.#engine.stop(msg, clear)
     }
 
     getResolution(){
