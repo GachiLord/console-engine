@@ -1,15 +1,17 @@
 import sleep from "../lib/sleep.js";
 import { EventEmitter } from 'node:events';
 import * as readline from 'node:readline';
-
+import readlineSync from 'readline-sync'
+import cliCursor from 'cli-cursor';
 
 // events
 class EngineEvents extends EventEmitter {}
 const engineEvents = new EngineEvents()
 // prepare console
-readline.emitKeypressEvents(process.stdin);
+cliCursor.hide()
+readline.emitKeypressEvents(process.stdin)
 if (process.stdin.setRawMode != null) {
-  process.stdin.setRawMode(true);
+    process.stdin.setRawMode(true)
 }
 
 
@@ -25,18 +27,20 @@ export default class Engine{
             engineEvents.emit('keypress', str, key)
         })
         // create a viewUpdate listener
-        engineEvents.on('update', async (view) => {
-            console.clear()
-            console.log(view)
-            // log a dubug info
-            if (this.#debugInfo !== undefined ) console.log(this.#debugInfo)
-            // emit an event when rendering is complete
-            engineEvents.emit('updated')
-        })
+        engineEvents.on('update', this.handleUpdate)
+    }
+
+    handleUpdate = (view: string) => {
+        console.clear()
+        console.log(view)
+        // log a dubug info
+        if (this.#debugInfo !== undefined ) console.log(this.#debugInfo)
+        // emit an event when rendering is complete
+        engineEvents.emit('updated')
     }
     
     /**
-     * console.log a given string synchronously.
+     * console.log a given string.
      * 
      * @async
      * @method
@@ -52,8 +56,19 @@ export default class Engine{
         engineEvents.emit('rendered')
     }
 
+    renderSync(view: string){
+        this.handleUpdate(view)
+    }
+
     getEvents(){
         return engineEvents
+    }
+
+    getPressedKey(){
+        const key = readlineSync.keyIn('', {hideEchoBack: true, mask: ''})
+        process.stdin.setRawMode(true)
+        process.stdin.resume()
+        return key
     }
 
     setDebugInfo(info: any){

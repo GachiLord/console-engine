@@ -1,4 +1,5 @@
 import Sprite from "../core/Sprite.js";
+import ViewBuilder from "../lib/ViewBuilder.js";
 
 
 export default class Alert extends Sprite{
@@ -7,7 +8,7 @@ export default class Alert extends Sprite{
     currentIndex: number = 0
 
     constructor(text: string, buttons: undefined|string[] = undefined, initialIndex: undefined|number = undefined){
-        super({x: 0, y: 0}, '', '', false)
+        super({x: 0, y: 0}, '', undefined, false)
         this.text = text
         if (buttons) this.buttons = buttons
         if (initialIndex) this.currentIndex = initialIndex 
@@ -17,16 +18,16 @@ export default class Alert extends Sprite{
         let currentIndex: number = this.currentIndex
         this.updateState({sprite: this.#getModal(currentIndex)})
         
-        this._sceneEvents.on('keypress', async (_: string, key: any) => {
+        this._sceneEvents.on('keypress', async (key: string) => {
             if (this.getState().show){
-                switch(key.name){
+                switch(key){
                     case 'w':
                         if (currentIndex - 1 >= 0) currentIndex--
                         break
                     case 's':
                         if (currentIndex + 1 < this.buttons.length) currentIndex++
                         break
-                    case 'return':
+                    case ' ':
                         this.currentIndex = currentIndex
                         this.trigger('optionChosen', currentIndex)
                         break
@@ -37,16 +38,27 @@ export default class Alert extends Sprite{
     }
 
     #getModal(activeButtonIndex: number = 0){
+        const size = this._scene.getResolution()
         let modal = ''
 
-        modal += this.text
+        modal += this.text + '\n'
         this.buttons.forEach( (item, index) => {
-            if (activeButtonIndex === index) modal += `\n=> ${item}`
-            else modal += `\n${item}`
+            if (activeButtonIndex === index) modal += `=> ${item}\n`
+            else modal += `${item}\n`
         })
 
+        let view = modal.split('\n').map( item => {
+            const deltaWidth = size.width - item.length 
+            if (deltaWidth > 0) return item += ' '.repeat(deltaWidth)
+            else return item
+        } )
+        const deltaHeight = size.height - view.length
+        if (deltaHeight > 0) {
+            const blankLines = Array(deltaHeight).fill(' '.repeat(size.width))
+            view = view.concat(blankLines)
+        }
 
-        return modal
+        return view.join('\n')
     }
 
     async fire(){
@@ -59,6 +71,32 @@ export default class Alert extends Sprite{
         } )
 
         return await choice
+    }
+
+    fireSync(){
+        this.show()
+        let currentIndex: number = this.currentIndex
+        this.updateStateSync({sprite: this.#getModal(currentIndex)})
+
+        while(true){
+            const key = this._scene.getPressedKey()
+            
+            if(key === 'w'){
+                if (currentIndex - 1 >= 0) currentIndex--
+            }
+            else if(key === 's'){
+                if (currentIndex + 1 < this.buttons.length) currentIndex++
+            }
+            else if(key === ' '){            
+                this.currentIndex = currentIndex
+                break
+            }
+            this.updateStateSync({sprite: this.#getModal(currentIndex)})
+        }
+
+        this.hide()
+
+        return currentIndex
     }
 
 }

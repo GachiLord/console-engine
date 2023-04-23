@@ -97,12 +97,15 @@ export default class Sprite{
      * @returns {Promise<void>}
      */
     async updateState(props: object, speedCoef: number = 1): Promise<void>{
-        if (!this._scene || !this._sceneEvents || !this._layers) throw new AddError()
+        this.updateStateSync(props)
+        if (speedCoef > 0) await sleep(speedCoef * 100)
+    }
 
+    updateStateSync(props: object){
+        if (!this._scene || !this._sceneEvents || !this._layers) throw new AddError()
         this._state = {...this._state, ...props}
         this._sceneEvents.emit('update')
         this._spriteEvents.emit('update', props)
-        if (speedCoef > 0) await sleep(speedCoef * 100)
     }
 
     /**
@@ -191,7 +194,7 @@ export default class Sprite{
      * @returns {void}
      */
     hide(): void{
-        this.updateState({show: false}, 0)
+        this.updateStateSync({show: false})
     }
 
     /**
@@ -204,6 +207,6 @@ export default class Sprite{
      * @returns {void}
      */
     show(): void{
-        this.updateState({show: true}, 0)
+        this.updateStateSync({show: true})
     }
 }

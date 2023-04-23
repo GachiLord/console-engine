@@ -33,12 +33,14 @@ export default class Scene{
         sceneEvents.on('update', () => {
             this.#handleUpdate()
         })
-        // sceneEvents.on('distruct', () => {
-        //     // remove scene
-        // })
+
         this.#engineEvents.on('keypress', (...args) => {
             sceneEvents.emit('keypress', ...args)
         })
+    }
+
+    getPressedKey(){
+        return this.#engine.getPressedKey()
     }
 
     /**
@@ -51,8 +53,8 @@ export default class Scene{
         let height = this.#resolution.height
         // create blank win
         for (let i = height; i > 0; i--) view.push([])
-        view.forEach( (item: { char: string; owners: Set<unknown>; }[]) => {
-            for (let j = 0; j < width; j++) item.push({char: ' ', owners: new Set() })
+        view.forEach( (item: { char: string; owners: Set<Sprite>, layerIndex: undefined|number}[]) => {
+            for (let j = 0; j < width; j++) item.push({char: ' ', owners: new Set(), layerIndex: undefined })
         } )
         // helpers
         const getValueByCoors = (container: any, coors: ICoor) => {
@@ -72,19 +74,21 @@ export default class Scene{
                 if (style[coors.y]) return style[coors.y][coors.x]
             }
         }
-        const setCharByCoors = (coors: ICoor, char: string, style: string|undefined, owners: Array<Sprite>) => {
-            view[coors.y][coors.x] = {char: getStyled(char, style), owners: new Set(owners)}
+        const setCharByCoors = (coors: ICoor, char: string, style: string|undefined, owners: Array<Sprite>, layerIndex: number) => {
+            let charToSet = view[coors.y][coors.x]
+            if (charToSet.layerIndex !== 0 || layerIndex === 0) {
+                view[coors.y][coors.x] = {char: getStyled(char, style), owners: new Set(owners), layerIndex: layerIndex}
+            }
         }
         const setLocality = (coors: ICoor, owner: Sprite) => {
             // const char = getCharByCoors(coors)
             let localCharCoors = {x: coors.x, y: coors.y + 1}
             let localChar = getCharByCoors(localCharCoors)
             
-
             // helper
             const emitOrAdd = () => {
                 if (localChar){
-                    if (localChar.owners.size > 0 && !localChar.owners.has(owner) && localChar.char !== ' ') {
+                    if (localChar.owners.size > 0 && !localChar.owners.has(owner) && localChar.char !== ' ' && localChar.layerIndex !== 0) {
                         owner.trigger('collision',
                         {
                             target: owner,
@@ -118,7 +122,7 @@ export default class Scene{
             } )
         }
         // add sprites
-        this.#layers.forEach( layer => {
+        this.#layers.forEach( (layer, layerIndex) => {
             layer.forEach( item => {
                 if (!item.getState().show) return
                 let coor = item.getState().coor
@@ -133,7 +137,7 @@ export default class Scene{
                         const charStyle = getStyleValue(style, {x: x, y: y})
                         // check touching
                         setLocality(charCoors, item)
-                        if (getCharByCoors(charCoors)) setCharByCoors(charCoors, char, charStyle, [item])
+                        if (getCharByCoors(charCoors)) setCharByCoors(charCoors, char, charStyle, [item], layerIndex)
                     })
                 } )
             } )
@@ -151,6 +155,11 @@ export default class Scene{
         else this.#engine.render(this.#compose())
     }
 
+    #handleUpdateSync(){
+        if (this.#renderHandler) this.#renderHandler(this.#compose())
+        else this.#engine.renderSync(this.#compose())
+    }
+
     /**
      * Force update of the scene.
      * 
@@ -162,6 +171,10 @@ export default class Scene{
      */
     update(): void{
         sceneEvents.emit('update')
+    }
+
+    updateSync(){
+        this.#handleUpdateSync()
     }
 
     /**
