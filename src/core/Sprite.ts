@@ -157,6 +157,16 @@ export default class Sprite{
         //this._abilities.canMove = true
     }
 
+    goStraightSync(endCoor: number, axis: string = 'x'){
+        // move sprite
+        let coor = this._state.coor
+        // why I cant use js normally???
+        let key = axis as keyof typeof coor
+        coor[key] = endCoor
+
+        this.updateStateSync({coor: coor})
+    }
+
     disableGoing(){
         this._abilities.canMove = false
     }
