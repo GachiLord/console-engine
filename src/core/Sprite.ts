@@ -146,7 +146,6 @@ export default class Sprite{
         let startCoor: number = coor[key]
         const directionCoef = endCoor > startCoor ? 1: -1
         
-
         // get to coor if there is no stopGoing command
         while (startCoor !== endCoor && this._abilities.canMove){
             startCoor += directionCoef
@@ -160,7 +159,6 @@ export default class Sprite{
     goStraightSync(endCoor: number, axis: string = 'x'){
         // move sprite
         let coor = this._state.coor
-        // why I cant use js normally???
         let key = axis as keyof typeof coor
         coor[key] = endCoor
 
@@ -192,6 +190,10 @@ export default class Sprite{
             this.goStraight(coor.x, 'x', speedCoef),
             this.goStraight(coor.y, 'y', speedCoef)
         ])
+    }
+    
+    gotoSync(coor: ICoor){
+        this.updateStateSync({coor: coor})
     }
 
     /**
