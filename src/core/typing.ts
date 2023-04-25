@@ -17,6 +17,11 @@ export interface ISpriteState{
     style: Style
 }
 
+export interface ISriteAbilities{
+    canMove: boolean,
+    canChangeView: boolean,
+}
+
 export interface IMap{
     getMap():View,
     setView(view: string):void,

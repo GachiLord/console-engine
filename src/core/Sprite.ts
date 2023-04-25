@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto'
 import EventEmitter from "events"
 import { AddError } from './errors.js'
 import Scene from "./Scene.js"
-import { ICoor, ISpriteState, Style, Layer } from "./typing.js"
+import { ICoor, ISpriteState, Style, Layer, ISriteAbilities } from "./typing.js"
 
 
 class SpriteEvents extends EventEmitter{}
@@ -22,7 +22,7 @@ export default class Sprite{
         sprite: '#',
         style: undefined
     }
-    _abilities = {
+    _abilities: ISriteAbilities = {
         canMove: true,
         canChangeView: true,
     }
@@ -97,12 +97,19 @@ export default class Sprite{
      * @returns {Promise<void>}
      */
     async updateState(props: object, speedCoef: number = 1): Promise<void>{
-        this.updateStateSync(props)
+        this.updateStateSync({...this._state, ...props})
         if (speedCoef > 0) await sleep(speedCoef * 100)
     }
 
     updateStateSync(props: object){
         if (!this._scene || !this._sceneEvents || !this._layers) throw new AddError()
+
+        // check abilities
+        const flags = Object.keys(props)
+        if (flags.includes('coor') && !this._abilities.canMove) return
+        if ((flags.includes('sprite') || flags.includes('show')) && !this._abilities.canChangeView) return
+
+        // update state
         this._state = {...this._state, ...props}
         this._sceneEvents.emit('update')
         this._spriteEvents.emit('update', props)
@@ -146,18 +153,15 @@ export default class Sprite{
         let startCoor: number = coor[key]
         const directionCoef = endCoor > startCoor ? 1: -1
         
-        // get to coor if there is no stopGoing command
-        while (startCoor !== endCoor && this._abilities.canMove){
+        // get to coor
+        while (startCoor !== endCoor){
             startCoor += directionCoef
             coor[key] = startCoor
             await this.updateState({coor: coor}, speedCoef)
         }
-        // reset ability flag
-        //this._abilities.canMove = true
     }
 
     goStraightSync(endCoor: number, axis: string = 'x'){
-        // move sprite
         let coor = this._state.coor
         let key = axis as keyof typeof coor
         coor[key] = endCoor
@@ -165,12 +169,8 @@ export default class Sprite{
         this.updateStateSync({coor: coor})
     }
 
-    disableGoing(){
-        this._abilities.canMove = false
-    }
-
-    enableGoing(){
-        this._abilities.canMove = true
+    setAbilities(props: object){
+        this._abilities = {...this._abilities, ...props}
     }
 
     /**
@@ -193,6 +193,7 @@ export default class Sprite{
     }
     
     gotoSync(coor: ICoor){
+        if (!this._abilities.canMove) return
         this.updateStateSync({coor: coor})
     }
 

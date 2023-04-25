@@ -1,5 +1,4 @@
 import Sprite from "../core/Sprite.js";
-import ViewBuilder from "../lib/ViewBuilder.js";
 
 
 export default class Alert extends Sprite{
