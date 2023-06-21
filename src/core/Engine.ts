@@ -16,15 +16,15 @@ if (process.stdin.setRawMode != null) {
 
 
 export default class Engine{
-    #debugInfo: any
-
-    constructor(){
+    #debugInfo: any    
+  
+    constructor(keypressHandler: any) {
         // keypress listener
         process.stdin.on('keypress', (str, key) => {
             if (key && key.name === 'c' && key.ctrl) {
                 this.exit()
             }
-            engineEvents.emit('keypress', str, key)
+            keypressHandler(str, key)
         })
         // create a viewUpdate listener
         engineEvents.on('update', this.handleUpdate)

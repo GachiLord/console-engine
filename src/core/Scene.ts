@@ -25,17 +25,17 @@ export default class Scene{
      * @name Scene
      */
     constructor(resolution = defaultResolution, renderHandler: Function|undefined = undefined){
-        this.#engine = new Engine()
+        const keypressHandler = (str: string, key: object) => {
+          sceneEvents.emit('keypress', str, key)
+        }
+
+        this.#engine = new Engine(keypressHandler)
         this.#engineEvents = this.#engine.getEvents()
         this.#resolution = resolution
         this.#renderHandler = renderHandler
 
         sceneEvents.on('update', () => {
             this.#handleUpdate()
-        })
-
-        this.#engineEvents.on('keypress', (...args) => {
-            sceneEvents.emit('keypress', ...args)
         })
     }
 
