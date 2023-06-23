@@ -31,8 +31,11 @@ export default class Engine{
     }
 
     handleUpdate = (view: string) => {
-        console.clear()
-        console.log(view)
+        // clear and print
+        const out = process.stdout
+        out.cursorTo(0, 0)
+        out.clearScreenDown()
+        out.write(view)
         // log a dubug info
         if (this.#debugInfo !== undefined ) console.log(this.#debugInfo)
         // emit an event when rendering is complete

@@ -35,7 +35,7 @@ enemy1.on('collision', (e) => {
 // add listener for stop game
 scene.on('keypress', async (_: string, key: any) => {
     if (key.name === 'escape'){
-        if (alert.fireSync() === 0) scene.exit()
+        if (alert.fireSync() === 0) scene.exit(undefined, false)
     }
 })
 

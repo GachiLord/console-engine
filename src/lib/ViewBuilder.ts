@@ -1,26 +1,19 @@
 import { View } from "../core/typing.js"
-import isUnicode from "./isUnicode.js"
 
 export default class ViewBuilder{
     static getAsArray(view: string){
-        let lines:View = []
+        const lines:View = []
+
         view.split('\n').forEach( line => {
             let curLine = []
-            let i = 0
-            while( i < line.length){
-                if (isUnicode(line[i]) && isUnicode(line[i+1])) {
-                    curLine.push(line[i] + line[i+1])
-                    i+=2
-                }
-                else {
-                    curLine.push(line[i])
-                    i++
-                }
+
+            for(const s of new Intl.Segmenter().segment(line)){
+                curLine.push(s.segment)
             }
+
             lines.push(curLine)
         } )
-
-
+        
         return lines
     }
 
