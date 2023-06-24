@@ -1,4 +1,4 @@
-import chalk, { ChalkInstance } from "../../node_modules/chalk/source/index.js";
+import chalk, { ChalkInstance } from "chalk/source/index.js";
 
 
 export default function(char: string, property: string|undefined){
