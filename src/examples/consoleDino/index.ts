@@ -12,8 +12,8 @@ const enemy1 = new Sprite({x: 51, y: 4}, '🤬')
 const speedBar = new Bar({x: 0, y: 8}, 'speed', 30)
 const alert = new Alert('Do you wanna leave?')
 // score
-const getScore = (n: number) => `score: ${n}`
 let totalScore = 0
+const getScore = (n: number) => `score: ${n}`
 const score = new Sprite({x: 0, y: 7}, getScore(totalScore))
 // adds
 scene.add(sharp1, 2)
@@ -24,11 +24,11 @@ scene.add(speedBar, 0)
 scene.add(alert, 0)
 
 
-let speed: number = 0.5
+let speed: number = 50
 // add listener for collision
 enemy1.on('collision', (e) => {
     if (e.sprites.includes(sharp1)){
-        speed += 0.01
+        speed += 1
         totalScore--
     }
 })
@@ -43,11 +43,11 @@ scene.on('keypress', async (_: string, key: any) => {
 while(true){
     await enemy1.goStraight(-1, 'x', speed)
     await enemy1.updateState({coor: {x: 51, y: 4}}, 0)
-    if (speed >= 0.1) speed -= 0.01
+    if (speed >= 0.1) speed -= 1
     if (totalScore < 0) totalScore = 0
     else totalScore++
     sharp1.setSpeed(speed)
     score.updateState({sprite: getScore(totalScore)}, 0)
-    const newValue:number = Number(((0.5 - speed)).toFixed(2))
-    if (newValue >= 0) speedBar.updateValue( Math.round(newValue * 100) )
+    const newValue:number = Number(50 - speed)
+    if (newValue >= 0) speedBar.updateValue( Math.round(newValue) )
 }

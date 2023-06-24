@@ -3,7 +3,7 @@ import Sprite from "../../core/Sprite.js";
 
 export default class Player extends Sprite{
     #onGround = true
-    #speed = 1
+    #speed = 100
     #defaultCoors
 
     constructor(coor: ICoor, view: string){
@@ -13,10 +13,7 @@ export default class Player extends Sprite{
     }
 
     added(){
-        let c = 0
         this._sceneEvents.on('keypress', async (key: string) => {
-            // this._scene.log(c)
-            // c++
             const curCoors = this._state.coor
             if (key === ' ') {
                 if (this.#onGround){

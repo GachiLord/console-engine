@@ -96,9 +96,9 @@ export default class Sprite{
      * @param {number} speedCoef?
      * @returns {Promise<void>}
      */
-    async updateState(props: object, speedCoef: number = 1): Promise<void>{
+    async updateState(props: object, speedCoef: number = 100): Promise<void>{
         this.updateStateSync({...this._state, ...props})
-        if (speedCoef > 0) await sleep(speedCoef * 100)
+        if (speedCoef > 0) await sleep(speedCoef)
     }
 
     updateStateSync(props: object){
@@ -145,7 +145,7 @@ export default class Sprite{
      * @param {number} speedCoef frame update speed
      * @returns {Promise<void>}
      */
-    async goStraight(endCoor: number, axis: string = 'x', speedCoef: number = 1): Promise<void>{
+    async goStraight(endCoor: number, axis: string = 'x', speedCoef: number = 100): Promise<void>{
         // move sprite
         let coor = this._state.coor
         // why I cant use js normally???
@@ -185,7 +185,7 @@ export default class Sprite{
      * @param {any} speedCoef frame update speed
      * @returns {Promise<void>}
      */
-    async goto(coor: ICoor, speedCoef: number = 1): Promise<void>{
+    async goto(coor: ICoor, speedCoef: number = 100): Promise<void>{
         await Promise.all([
             this.goStraight(coor.x, 'x', speedCoef),
             this.goStraight(coor.y, 'y', speedCoef)

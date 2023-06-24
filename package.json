@@ -1,7 +1,7 @@
 {
   "name": "console-engine",
   "version": "0.5.0",
-  "description": "game engine for console",
+  "description": "engine for interactive console apps",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
