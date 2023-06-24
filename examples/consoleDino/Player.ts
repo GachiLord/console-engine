@@ -1,5 +1,5 @@
-import { ICoor } from "../../core/typing.js";
-import Sprite from "../../core/Sprite.js";
+import { ICoor } from "../../dist/core/typing.js";
+import Sprite from "../../dist/core/Sprite.js";
 
 export default class Player extends Sprite{
     #onGround = true

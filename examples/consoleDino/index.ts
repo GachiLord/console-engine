@@ -1,8 +1,8 @@
-import Scene from "../../core/Scene.js"
-import Sprite from "../../core/Sprite.js"
+import Scene from "../../dist/core/Scene.js"
+import Sprite from "../../dist/core/Sprite.js"
 import Player from './Player.js'
-import Bar from "../../assets/Bar.js"
-import Alert from "../../assets/Alert.js"
+import Bar from "../../dist/assets/Bar.js"
+import Alert from "../../dist/assets/Alert.js"
 
 
 const scene = new Scene()

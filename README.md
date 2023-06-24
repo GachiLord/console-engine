@@ -57,7 +57,7 @@ sprite.on('collision', (e) => {
     // this event emmits when sprite hits another sprite
 })
 ```
-**Check [examples](https://github.com/GachiLord/console-engine/tree/master/src/examples "examples") for better understanding of Sprite and Scene.**
+**Check [examples](https://github.com/GachiLord/console-engine/tree/master/examples "examples") for better understanding of Sprite and Scene.**
 
 ##### more about Sprite
 Sprites have their own state, when it updates Scene is being rerendering.
