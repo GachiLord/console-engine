@@ -64,10 +64,10 @@ Sprites have their own state, when it updates Scene is being rerendered.
 ```javascript
 // example state
 {
-        show: true,
-        coor: {x: 0, y: 0},
-        sprite: '#',
-        style: undefined
+    show: true,
+    coor: {x: 0, y: 0},
+    sprite: '#',
+    style: undefined
 }
 ```
 Also they have abilities that control update behavior.
