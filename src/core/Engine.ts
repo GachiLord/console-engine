@@ -37,7 +37,7 @@ export default class Engine{
         out.clearScreenDown()
         out.write(view)
         // log a dubug info
-        if (this.#debugInfo !== undefined ) console.log(this.#debugInfo)
+        if (this.#debugInfo !== undefined ) out.write('\n' + this.#debugInfo)
         // emit an event when rendering is complete
         engineEvents.emit('updated')
     }
