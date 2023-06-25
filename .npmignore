@@ -1,5 +1,5 @@
 /src
-/examples
+examples
 /test
 .gitignore
 package-lock.json

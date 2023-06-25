@@ -1,8 +1,8 @@
-import Scene from "../../dist/core/Scene.js"
-import Sprite from "../../dist/core/Sprite.js"
+import Scene from "../../core/Scene.js"
+import Sprite from "../../core/Sprite.js"
 import Player from './Player.js'
-import Bar from "../../dist/assets/Bar.js"
-import Alert from "../../dist/assets/Alert.js"
+import Bar from "../../assets/Bar.js"
+import Alert from "../../assets/Alert.js"
 
 
 const scene = new Scene()
@@ -38,7 +38,7 @@ scene.on('keypress', async (_: string, key: any) => {
         if (alert.fireSync() === 0) scene.exit(undefined, false)
     }
 })
-
+scene.log("xyй")
 
 while(true){
     await enemy1.goStraight(-1, 'x', speed)
