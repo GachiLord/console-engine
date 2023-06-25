@@ -38,7 +38,6 @@ scene.on('keypress', async (_: string, key: any) => {
         if (alert.fireSync() === 0) scene.exit(undefined, false)
     }
 })
-scene.log("xyй")
 
 while(true){
     await enemy1.goStraight(-1, 'x', speed)

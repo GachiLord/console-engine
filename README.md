@@ -60,7 +60,7 @@ sprite.on('collision', (e) => {
 **Check [examples](https://github.com/GachiLord/console-engine/tree/master/examples "examples") for better understanding of Sprite and Scene.**
 
 ##### more about Sprite
-Sprites have their own state, when it updates Scene is being rerendering.
+Sprites have their own state, when it updates Scene is being rerendered.
 ```javascript
 // example state
 {
