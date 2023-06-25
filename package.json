@@ -9,7 +9,7 @@
   "keywords": ["engine", "game", "console", "node"],
   "scripts": {
     "test": "echo 'no tests'",
-    "build": "npx tsc",
+    "build": "npx tsc --sourceMap false",
     "startDino": "node --inspect ./dist/examples/consoleDino/index.js",
     "profileDino": "node --prof ./dist/examples/consoleDino/index.js",
     "analizeProf": "node --prof-process isolate-0x69180b0-10843-v8.log > processed.txt; cat processed.txt",
