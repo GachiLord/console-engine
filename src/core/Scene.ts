@@ -276,11 +276,33 @@ export default class Scene{
         this.update()
     }
 
+    /**
+     * process.exit analog
+     * 
+     * @method
+     * @name exit
+     * @kind method
+     * @memberof Scene
+     * @param {any} msg?
+     * @param {boolean | undefined} clear?
+     * @returns {void}
+     */
     exit(msg: any = undefined, clear: boolean|undefined = true){
         sceneEvents.emit('distruct')
         this.#engine.exit(msg, clear)
     }
 
+    /**
+     * disables rendering, but does not delete scene and sprites. Useful for post exit work.
+     * 
+     * @method
+     * @name stop
+     * @kind method
+     * @memberof Scene
+     * @param {any} msg?
+     * @param {boolean | undefined} clear?
+     * @returns {void}
+     */
     stop(msg: any = undefined, clear: boolean|undefined = true){
         this.#engine.stop(msg, clear)
     }

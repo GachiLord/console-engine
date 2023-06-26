@@ -11,6 +11,7 @@ const floor = new Sprite({x: 0, y: 5}, '='.repeat(51), [ 'blue '.repeat(25).spli
 const enemy1 = new Sprite({x: 51, y: 4}, '🤬')
 const speedBar = new Bar({x: 0, y: 8}, 'speed', 35)
 const alert = new Alert('Do you wanna leave?')
+const restartAlert = new Alert('Game is over', ["restart", "exit"])
 // score
 let totalScore = 0
 const getScore = (n: number) => `score: ${n}`
@@ -35,10 +36,10 @@ enemy1.on('collision', (e) => {
 // add listener for stop game
 scene.on('keypress', async (_: string, key: any) => {
     if (key.name === 'escape'){
-        if (alert.fireSync() === 0) scene.exit(undefined, false)
+        if (alert.fireSync() === 0) scene.exit()
     }
 })
-
+// game loop
 while(true){
     await enemy1.goStraight(-1, 'x', speed)
     enemy1.gotoSync({x: 51, y: 4})
