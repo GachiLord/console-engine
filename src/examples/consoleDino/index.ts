@@ -9,7 +9,7 @@ const scene = new Scene()
 const sharp1 = new Player({x:4, y:4}, '🦀')
 const floor = new Sprite({x: 0, y: 5}, '='.repeat(51), [ 'blue '.repeat(25).split(' ').slice(0,-1).concat('red '.repeat(25).split(' ')) ])
 const enemy1 = new Sprite({x: 51, y: 4}, '🤬')
-const speedBar = new Bar({x: 0, y: 8}, 'speed', 30)
+const speedBar = new Bar({x: 0, y: 8}, 'speed', 35)
 const alert = new Alert('Do you wanna leave?')
 // score
 let totalScore = 0
@@ -41,8 +41,8 @@ scene.on('keypress', async (_: string, key: any) => {
 
 while(true){
     await enemy1.goStraight(-1, 'x', speed)
-    await enemy1.updateState({coor: {x: 51, y: 4}}, 0)
-    if (speed >= 0.1) speed -= 1
+    enemy1.gotoSync({x: 51, y: 4})
+    if (speed >= 15) speed -= 1
     if (totalScore < 0) totalScore = 0
     else totalScore++
     sharp1.setSpeed(speed)

@@ -40,7 +40,7 @@ export default class Alert extends Sprite{
         const size = this._scene.getResolution()
         let modal = ''
 
-        modal += this.text + '\n'
+        modal += `${this.text}\n(w - up, s - down, space - choose)\n`
         this.buttons.forEach( (item, index) => {
             if (activeButtonIndex === index) modal += `=> ${item}\n`
             else modal += `${item}\n`
