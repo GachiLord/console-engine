@@ -246,7 +246,7 @@ export default class Scene{
      */
     log(data: any): void{
         this.#engine.setDebugInfo(data)
-        this.update()
+        //this.update()
     }
     /**
      * Setting the map of the scene.
@@ -287,9 +287,9 @@ export default class Scene{
      * @param {boolean | undefined} clear?
      * @returns {void}
      */
-    exit(msg: any = undefined, clear: boolean|undefined = true){
+    exit(msg: any = undefined, clear: boolean|undefined = true, exitCode = 0){
         sceneEvents.emit('distruct')
-        this.#engine.exit(msg, clear)
+        this.#engine.exit(msg, clear, exitCode)
     }
 
     /**

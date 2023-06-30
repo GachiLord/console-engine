@@ -18,8 +18,8 @@ export interface ISpriteState{
 }
 
 export interface ISriteAbilities{
-    canMove: boolean,
-    canChangeView: boolean,
+    canMove?: boolean,
+    canChangeView?: boolean,
 }
 
 export interface IMap{

@@ -1,10 +1,12 @@
 import Sprite from "../core/Sprite.js";
+import { ISriteAbilities } from "../core/typing.js";
 
 
 export default class Alert extends Sprite{
     text = ''
     buttons: string[] = ['yes', 'no']
     currentIndex: number = 0
+    #canFire = true
 
     constructor(text: string, buttons: undefined|string[] = undefined, initialIndex: undefined|number = undefined){
         super({x: 0, y: 0}, '', undefined, false)
@@ -61,6 +63,8 @@ export default class Alert extends Sprite{
     }
 
     async fire(){
+        if (!this.#canFire) return this.currentIndex
+
         this.show()
         const choice = new Promise( r => {
             this.once('optionChosen', () => {
@@ -73,6 +77,8 @@ export default class Alert extends Sprite{
     }
 
     fireSync(){
+        if (!this.#canFire) return this.currentIndex
+
         this.show()
         let currentIndex: number = this.currentIndex
         this.updateStateSync({sprite: this.#getModal(currentIndex)})
@@ -93,9 +99,17 @@ export default class Alert extends Sprite{
             this.updateStateSync({sprite: this.#getModal(currentIndex)})
         }
 
-        this.hide()
+        setTimeout(() => this.hide(), 0)
 
         return currentIndex
+    }
+
+    disable(){
+        this.#canFire = false
+    }
+
+    enable(){
+        this.#canFire = true
     }
 
 }

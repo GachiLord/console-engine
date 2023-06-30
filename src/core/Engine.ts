@@ -22,7 +22,7 @@ export default class Engine{
         // keypress listener
         process.stdin.on('keypress', (str, key) => {
             if (key && key.name === 'c' && key.ctrl) {
-                this.exit()
+                this.exit(undefined, true, 0)
             }
             keypressHandler(str, key)
         })
@@ -78,10 +78,10 @@ export default class Engine{
         this.#debugInfo = info
     }
 
-    exit(msg: any = undefined, clear: boolean = true){
+    exit(msg: any = undefined, clear: boolean = true, exitCode = 1){
         if (msg) console.log(msg)
         else if(clear) console.clear()
-        process.exit()
+        process.exit(exitCode)
     }
 
     stop(msg: any = undefined, clear: boolean = true){

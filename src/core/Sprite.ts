@@ -47,16 +47,24 @@ export default class Sprite{
         this._spriteEvents.on('update', () => { this.updated() })
     }
 
-    on(eventName: string, callback = (...e:any[]) => {}){
+    on(eventName: string| symbol, callback = (...e:any[]) => {}){
         this._spriteEvents.on(eventName, callback)
     }
     
-    once(eventName: string, callback = (...e:any[]) => {}){
+    once(eventName: string| symbol, callback = (...e:any[]) => {}){
         this._spriteEvents.once(eventName, callback)
     }
 
-    trigger(eventName: string, ...data:any[]){
+    trigger(eventName: string| symbol, ...data:any[]){
         this._spriteEvents.emit(eventName, ...data)
+    }
+
+    off(eventName: string| symbol, listener: (...args: any[]) => void){
+        this._spriteEvents.off(eventName, listener)
+    }
+
+    removeAllListeners(eventName: string| symbol| undefined = undefined){
+        this._spriteEvents.removeAllListeners(eventName)
     }
 
     added(){
@@ -96,23 +104,32 @@ export default class Sprite{
      * @param {number} speedCoef?
      * @returns {Promise<void>}
      */
-    async updateState(props: object, speedCoef: number = 100): Promise<void>{
+    async updateState(props: object, speedCoef: number = 100): Promise<boolean>{
         this.updateStateSync({...this._state, ...props})
         if (speedCoef > 0) await sleep(speedCoef)
-    }
-
-    updateStateSync(props: object){
-        if (!this._scene || !this._sceneEvents || !this._layers) throw new AddError()
-
-        // check abilities
-        const flags = Object.keys(props)
-        if (flags.includes('coor') && !this._abilities.canMove) return
-        if ((flags.includes('sprite') || flags.includes('show')) && !this._abilities.canChangeView) return
-
-        // update state
-        this._state = {...this._state, ...props}
+        // emit events
         this._sceneEvents.emit('update')
         this._spriteEvents.emit('update', props)
+        // set state
+        return this.#setState(props)
+    }
+
+    updateStateSync(props: object): boolean {
+        const updateResult = this.#setState(props)
+        this._scene.updateSync()
+        return updateResult
+    }
+
+    #setState(props: object){
+        if (!this._scene || !this._sceneEvents || !this._layers) throw new AddError()
+        // check abilities
+        const flags = Object.keys(props)
+        if (flags.includes('coor') && !this._abilities.canMove) return false
+        if ((flags.includes('sprite') || flags.includes('show')) && !this._abilities.canChangeView) return false
+        // set state
+        this._state = {...this._state, ...props}
+
+        return true
     }
 
     /**
@@ -169,7 +186,7 @@ export default class Sprite{
         this.updateStateSync({coor: coor})
     }
 
-    setAbilities(props: object){
+    setAbilities(props: ISriteAbilities){
         this._abilities = {...this._abilities, ...props}
     }
 
@@ -221,5 +238,9 @@ export default class Sprite{
      */
     show(): void{
         this.updateStateSync({show: true})
+    }
+
+    toString(){
+        return this._state.sprite
     }
 }
