@@ -9,6 +9,7 @@ class EngineEvents extends EventEmitter {}
 const engineEvents = new EngineEvents()
 // prepare console
 cliCursor.hide()
+console.clear()
 readline.emitKeypressEvents(process.stdin)
 if (process.stdin.setRawMode != null) {
     process.stdin.setRawMode(true)
