@@ -1,11 +1,12 @@
 import Engine from "./Engine.js"
 import { EventEmitter } from 'node:events';
 import defaultResolution from "../assets/defaultResolution.js";
-import { ICoor, Style, Layer } from "./typing.js";
+import { ICoor, Style, Layer, IUpdateData } from "./typing.js";
 import Sprite from "./Sprite.js";
 import GameMap from "./GameMap.js";
 import ViewBuilder from "../lib/ViewBuilder.js";
 import getStyled from "../lib/getStyled.js";
+import { char } from "./typing.js";
 
 
 class SceneEvents extends EventEmitter {}
@@ -18,6 +19,7 @@ export default class Scene{
     #engineEvents 
     #resolution
     #renderHandler
+    #layersCache: Array<char[][]> = []
     /**
      * A function that is called when a new instance of the class is created.
      * 
@@ -34,8 +36,8 @@ export default class Scene{
         this.#resolution = resolution
         this.#renderHandler = renderHandler
 
-        sceneEvents.on('update', () => {
-            this.#handleUpdate()
+        sceneEvents.on('update', (data: IUpdateData) => {
+            this.#handleUpdate(data.layerIndex)
         })
     }
 
@@ -47,100 +49,94 @@ export default class Scene{
      * Creating a blank window and then adding the sprites to it.
      * 
      */
-    #compose(){
-        let view: any = []
-        let width = this.#resolution.width
-        let height = this.#resolution.height
+    #compose(layerIndex: number|undefined){
+        // clear cache and render whole layers if layerIndex is not provided
+        if (layerIndex === undefined) this.#layersCache = []
+        // resolution
+        const width = this.#resolution.width
+        const height = this.#resolution.height
         // create blank win
-        for (let i = height; i > 0; i--) view.push([])
-        view.forEach( (item: { char: string; owners: Set<Sprite>, layerIndex: undefined|number}[]) => {
-            for (let j = 0; j < width; j++) item.push({char: ' ', owners: new Set(), layerIndex: undefined })
-        } )
+        const view: char[][] = ViewBuilder.getEmptyViewAsArray(height, width)
         // helpers
-        const getValueByCoors = (container: any, coors: ICoor) => {
-            if (container[coors.y]){
-                if (container[coors.y][coors.x]){
-                    return container[coors.y][coors.x]
-                }
-            }
-            return
-        }
-        const getCharByCoors = (coors: ICoor) => {
-            return getValueByCoors(view, coors)
-        }
-        const getStyleValue = (style: Style, coors: ICoor):string|undefined => {
+        function getStyleValue(style: Style, coors: ICoor):string|undefined{
             if (typeof style === 'string' || !style ) return style
-            else {
-                if (style[coors.y]) return style[coors.y][coors.x]
-            }
+            else if (style[coors.y]) return style[coors.y][coors.x]
         }
-        const setCharByCoors = (coors: ICoor, char: string, style: string|undefined, owners: Array<Sprite>, layerIndex: number) => {
-            let charToSet = view[coors.y][coors.x]
-            if (charToSet.layerIndex !== 0 || layerIndex === 0) {
-                view[coors.y][coors.x] = {char: getStyled(char, style), owners: new Set(owners), layerIndex: layerIndex}
-            }
+        function getChar(view: char[][], coor: ICoor){
+            if (!view[coor.y]) return
+            if (view[coor.y][coor.x]) return view[coor.y][coor.x]
         }
-        const setLocality = (coors: ICoor, owner: Sprite) => {
-            // const char = getCharByCoors(coors)
-            let localCharCoors = {x: coors.x, y: coors.y + 1}
-            let localChar = getCharByCoors(localCharCoors)
-            
-            // helper
-            const emitOrAdd = () => {
-                if (localChar){
-                    if (localChar.owners.size > 0 && !localChar.owners.has(owner) && localChar.char !== ' ' && localChar.layerIndex !== 0) {
-                        owner.trigger('collision',
-                        {
-                            target: owner,
-                            sprites: new Array(...localChar.owners),
-                            char: localChar.char
-                        }
-                        )
+        function checkCollision(collisionData: {view: char[][], owner: Sprite, char: char, charCoors: ICoor}){
+            const dirs = [
+                {...collisionData.charCoors, y: collisionData.charCoors.y + 1},
+                {...collisionData.charCoors, y: collisionData.charCoors.y - 1},
+                {...collisionData.charCoors, x: collisionData.charCoors.x + 1},
+                {...collisionData.charCoors, x: collisionData.charCoors.x - 1}
+            ]
+
+            dirs.forEach( dir => {
+                const foundChar = getChar(collisionData.view, dir)
+                if (!foundChar) return
+                if (foundChar === collisionData.char || foundChar.char === ' ') return
+                
+                collisionData.owner.trigger('collision',
+                    {
+                        target: collisionData.owner,
+                        sprites: [foundChar.owner],
+                        char: foundChar.char
                     }
-                }
-            }
-            emitOrAdd()
-
-            localCharCoors = {x: coors.x, y: coors.y - 1}
-            localChar = getCharByCoors(localCharCoors)
-            emitOrAdd()
-
-            localCharCoors = {x: coors.x + 1, y: coors.y}
-            localChar = getCharByCoors(localCharCoors)
-            emitOrAdd()
-
-            localCharCoors = {x: coors.x - 1, y: coors.y}
-            localChar = getCharByCoors(localCharCoors)
-            emitOrAdd()
+                )
+                if (foundChar.owner instanceof Sprite) foundChar.owner.trigger('collision',
+                    {
+                        target: foundChar.owner,
+                        sprites: [collisionData.owner],
+                        char: collisionData.char.char
+                    }
+                )
+            } )
+        }
+        function setChar(view: char[][], char: char, coor: ICoor){
+            if (!view[coor.y]) return
+            if (!view[coor.y][coor.x]) return
+            // set char
+            view[coor.y][coor.x] = char 
         }
         // add game map
         if (this.#map){
             this.#map.getMap().forEach( (item, index) => {
                 item.forEach( (jtem, jndex) => {
-                    view[index][jndex] = {char: jtem, owners: new Set([this.#map])}
+                    view[index][jndex] = {char: jtem, owner: this.#map}
                 } )
             } )
         }
         // add sprites
-        this.#layers.forEach( (layer, layerIndex) => {
-            layer.forEach( item => {
-                if (!item.getState().show) return
-                let coor = item.getState().coor
-                let sprite = item.getState().sprite
-                let style = item.getState().style
-                // add sprite
-                const lines = sprite.split('\n')
-                lines.forEach( (line: string, y: number) => {
-                    ViewBuilder.getAsArray(line)[0].forEach((char: string, x: number) => {
-                        // add char if there is a place
-                        const charCoors = {x: coor.x + x, y: coor.y + y}
-                        const charStyle = getStyleValue(style, {x: x, y: y})
-                        // check touching
-                        setLocality(charCoors, item)
-                        if (getCharByCoors(charCoors)) setCharByCoors(charCoors, char, charStyle, [item], layerIndex)
-                    })
-                } )
+        this.#layers.forEach( (layer, index) => {
+            if (layerIndex !== index && this.#layersCache[index]){
+                return ViewBuilder.joinViews(view, this.#layersCache[index])
+            }
+            const layerView = ViewBuilder.getEmptyViewAsArray(height, width)
+
+            layer.forEach( sprite => {
+                const state = sprite.getState()
+                if (!state.show) return
+                
+                ViewBuilder.getAsArray(state.sprite).forEach( (line, y) => {
+                    line.forEach( (char, x) => {
+                        // set char
+                        const charCoor = {x: state.coor.x + x, y: state.coor.y + y}
+                        const charStyle = getStyleValue(state.style, {x: x, y: y})
+                        const charToSet = {char: getStyled(char, charStyle), owner: sprite, layerIndex: layerIndex}
+
+                        setChar(layerView, charToSet, charCoor)
+                        // check collision
+                        checkCollision({view: layerView, owner: sprite, char: charToSet, charCoors: charCoor})
+                    } )
+                } ) 
             } )
+            // join
+            ViewBuilder.joinViews(view, layerView)
+            // cache updated layer
+            if (layerIndex === index) this.#layersCache[layerIndex] = layerView
         } )
         // make view a string
         return ViewBuilder.getAsString(view)
@@ -150,14 +146,14 @@ export default class Scene{
      * A private method that is called when the scene is updated.
      * 
      */
-    #handleUpdate(){
-        if (this.#renderHandler) this.#renderHandler(this.#compose())
-        else this.#engine.render(this.#compose())
+    #handleUpdate(layerIndex: number|undefined = undefined){
+        if (this.#renderHandler) this.#renderHandler(this.#compose(layerIndex))
+        else this.#engine.render(this.#compose(layerIndex))
     }
 
-    #handleUpdateSync(){
-        if (this.#renderHandler) this.#renderHandler(this.#compose())
-        else this.#engine.renderSync(this.#compose())
+    #handleUpdateSync(layerIndex: number|undefined = undefined){
+        if (this.#renderHandler) this.#renderHandler(this.#compose(layerIndex))
+        else this.#engine.renderSync(this.#compose(layerIndex))
     }
 
     /**
@@ -169,12 +165,12 @@ export default class Scene{
      * @memberof Scene
      * @returns {void}
      */
-    update(): void{
-        sceneEvents.emit('update')
+    update(layerIndex: number|undefined = undefined): void{
+        sceneEvents.emit('update', {layerIndex: layerIndex})
     }
 
-    updateSync(){
-        this.#handleUpdateSync()
+    updateSync(layerIndex: number|undefined){
+        this.#handleUpdateSync(layerIndex)
     }
 
     /**
@@ -195,8 +191,8 @@ export default class Scene{
             }
         }
         this.#layers[level].push(sprite)
-        sprite.setScene(this, this.#layers, sceneEvents)
-        this.update()
+        sprite.setScene(this, this.#layers, level, sceneEvents)
+        this.update(level)
     }
 
     /**
@@ -214,7 +210,7 @@ export default class Scene{
             layer.forEach( (item, i) => {
                 if (sprite === item) {
                     layer.splice(i, 1)
-                    sprite.setScene(undefined, undefined, undefined)
+                    sprite.setScene(undefined, undefined, undefined, undefined)
                 }
             } )
         } )
@@ -231,6 +227,7 @@ export default class Scene{
      */
     clear(): void{
         this.#layers = []
+        this.#layersCache = []
         this.update()
     }
 

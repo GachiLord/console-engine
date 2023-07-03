@@ -139,5 +139,5 @@ export default function(char: string, property: string|undefined){
     if (property[0] === '#') styledChar = chalk.hex(property)
     else if (property.slice(0, 3) === 'bg#') styledChar = chalk.bgHex(property)
 
-    return styledChar
+    return styledChar.toString()
 }

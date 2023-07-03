@@ -6,7 +6,12 @@
     "type": "git",
     "url": "https://github.com/GachiLord/console-engine"
   },
-  "keywords": ["engine", "game", "console", "node"],
+  "keywords": [
+    "engine",
+    "game",
+    "console",
+    "node"
+  ],
   "scripts": {
     "test": "echo 'no tests'",
     "build": "npx tsc --sourceMap false",
@@ -20,9 +25,11 @@
   "license": "MIT",
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
+    "@types/bunyan": "^1.8.8",
     "@types/node": "^18.16.18",
     "@types/prompt-sync": "^4.2.0",
     "@types/readline-sync": "^1.4.4",
+    "bunyan": "^1.8.15",
     "mocha": "^10.2.0",
     "typescript": "^4.9.5"
   },

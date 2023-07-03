@@ -1,18 +1,19 @@
 import Sprite from "../core/Sprite.js";
-import { ISriteAbilities } from "../core/typing.js";
 
 
 export default class Alert extends Sprite{
     text = ''
+    controlHint = '(w - up, s - down, space - choose)'
     buttons: string[] = ['yes', 'no']
     currentIndex: number = 0
     #canFire = true
 
-    constructor(text: string, buttons: undefined|string[] = undefined, initialIndex: undefined|number = undefined){
+    constructor(text: string, buttons?: string[], initialIndex?: number, controlHint?: string){
         super({x: 0, y: 0}, '', undefined, false)
         this.text = text
         if (buttons) this.buttons = buttons
         if (initialIndex) this.currentIndex = initialIndex 
+        if (controlHint) this.controlHint = controlHint
     }
 
     added(){
@@ -42,7 +43,7 @@ export default class Alert extends Sprite{
         const size = this._scene.getResolution()
         let modal = ''
 
-        modal += `${this.text}\n(w - up, s - down, space - choose)\n`
+        modal += `${this.text}\n${this.controlHint}\n`
         this.buttons.forEach( (item, index) => {
             if (activeButtonIndex === index) modal += `=> ${item}\n`
             else modal += `${item}\n`
@@ -99,7 +100,7 @@ export default class Alert extends Sprite{
             this.updateStateSync({sprite: this.#getModal(currentIndex)})
         }
 
-        setTimeout(() => this.hide(), 0)
+        this.hide()
 
         return currentIndex
     }

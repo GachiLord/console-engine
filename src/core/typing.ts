@@ -1,7 +1,9 @@
 import Sprite from "./Sprite"
+import GameMap from "./GameMap"
 
 
 export type Style = undefined|string|Array<Array<string>>
+export type char = { char: string, owner: Sprite|GameMap|undefined, layerIndex?: number }
 export type View = Array<Array<string>>
 export type Layer = Array<Sprite>
 
@@ -28,3 +30,6 @@ export interface IMap{
     setOrigin(originSprite: Sprite):void
 }
 
+export interface IUpdateData{
+    layerIndex: number
+}

@@ -13,6 +13,7 @@ export default class Sprite{
     _sceneEvents: EventEmitter|any
     _spriteEvents = new SpriteEvents()
     #id = randomUUID()
+    _layerIndex: undefined|number = undefined
     _style: Style
     _scene: Scene|any
     _layers: Array<Layer>|any
@@ -85,10 +86,11 @@ export default class Sprite{
      * @param {any} scene
      * @returns {void}
      */
-    setScene(scene: Scene|undefined, layers: Array<Array<Sprite>>|undefined, events: EventEmitter|undefined): void{
+    setScene(scene: Scene|undefined, layers: Array<Array<Sprite>>|undefined, layerIndex: number|undefined, events: EventEmitter|undefined): void{
         this._scene = scene
         this._layers = layers
         this._sceneEvents = events
+        this._layerIndex = layerIndex
         this._spriteEvents.emit('added')
     }
 
@@ -105,23 +107,23 @@ export default class Sprite{
      * @returns {Promise<void>}
      */
     async updateState(props: object, speedCoef: number = 100): Promise<boolean>{
-        this.updateStateSync({...this._state, ...props})
+        this.#setState(props)
         if (speedCoef > 0) await sleep(speedCoef)
         // emit events
-        this._sceneEvents.emit('update')
-        this._spriteEvents.emit('update', props)
+        this._sceneEvents.emit('update', { layerIndex: this._layerIndex })
+        this._spriteEvents.emit('update', { layerIndex: this._layerIndex })
         // set state
         return this.#setState(props)
     }
 
     updateStateSync(props: object): boolean {
         const updateResult = this.#setState(props)
-        this._scene.updateSync()
+        this._scene.updateSync(this._layerIndex)
         return updateResult
     }
 
     #setState(props: object){
-        if (!this._scene || !this._sceneEvents || !this._layers) throw new AddError()
+        if (!this._scene || !this._sceneEvents || !this._layers || this._layerIndex === undefined) throw new AddError()
         // check abilities
         const flags = Object.keys(props)
         if (flags.includes('coor') && !this._abilities.canMove) return false
