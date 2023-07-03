@@ -16,7 +16,8 @@ if (process.stdin.setRawMode != null) {
 
 
 export default class Engine{
-    #debugInfo: any    
+    #debugInfo: any
+    #viewCache: undefined|string    
   
     constructor(keypressHandler: any) {
         // keypress listener
@@ -31,17 +32,35 @@ export default class Engine{
     }
 
     handleUpdate = (view: string) => {
-        // clear and print
         const out = process.stdout
-        out.cursorTo(0, 0)
-        out.clearScreenDown()
-        out.write(view)
-        // log a dubug info
-        if (this.#debugInfo !== undefined ) out.write('\n' + this.#debugInfo)
-        // emit an event when rendering is complete
+        const finalView = this.#debugInfo ? view + '\n' + this.#debugInfo: view
+        const linesToUpdate = this.#getDiff(finalView)
+        
+        linesToUpdate.forEach( (line, y) => {
+            out.cursorTo(0, y)
+            out.clearLine(1)
+            out.write(line)
+        } )
         engineEvents.emit('updated')
+        // cache view
+        this.#viewCache = finalView
     }
-    
+
+    #getDiff(view: string): Map<number, string>{
+        const diff: Map<number, string> = new Map()
+
+        if (!this.#viewCache) {
+            view.split('\n').forEach( (line, i) => diff.set(i, line) )
+            return diff
+        }
+
+        const compared = this.#viewCache.split('\n')
+        view.split('\n').forEach( (line, index) => {
+            if (compared[index] !== line) diff.set(index, line)
+        } )
+
+        return diff
+    }    
     /**
      * console.log a given string.
      * 
