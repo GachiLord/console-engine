@@ -10,7 +10,7 @@ export class PosError extends Error{
 // sprite
 
 export class AddError extends Error{
-    constructor(msg = 'sprite has not been added to the scene. Use scene.add(sprite)'){
+    constructor(msg = 'sprite has not been added to the scene yet. Override sprite.added() to use the scene after addition. Use scene.add(sprite) to add sprite to the scene.'){
         super(msg)
         this.name = 'AddError'
     }

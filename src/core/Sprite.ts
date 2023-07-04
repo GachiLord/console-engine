@@ -10,13 +10,13 @@ class SpriteEvents extends EventEmitter{}
 
 
 export default class Sprite{
-    _sceneEvents: EventEmitter|any
-    _spriteEvents = new SpriteEvents()
-    #id = randomUUID()
+    readonly #id = randomUUID()
+    #sceneEvents: EventEmitter|undefined
+    #scene: Scene|undefined
+    #layers: Array<Layer>|undefined
+    readonly _spriteEvents = new SpriteEvents()
     _layerIndex: undefined|number = undefined
     _style: Style
-    _scene: Scene|any
-    _layers: Array<Layer>|any
     _state: ISpriteState = {
         show: true,
         coor: {x: 0, y: 0},
@@ -87,9 +87,9 @@ export default class Sprite{
      * @returns {void}
      */
     setScene(scene: Scene|undefined, layers: Array<Array<Sprite>>|undefined, layerIndex: number|undefined, events: EventEmitter|undefined): void{
-        this._scene = scene
-        this._layers = layers
-        this._sceneEvents = events
+        this.#scene = scene
+        this.#layers = layers
+        this.#sceneEvents = events
         this._layerIndex = layerIndex
         this._spriteEvents.emit('added')
     }
@@ -149,6 +149,21 @@ export default class Sprite{
 
     getAbilities(){
         return this._abilities
+    }
+
+    get _scene(): Scene{
+        if (this._scene) return this._scene
+        else throw new AddError()
+    }
+
+    get _layers(): Array<Layer>{
+        if (this._layers) return this._layers
+        else throw new AddError()
+    }
+
+    get _sceneEvents(): EventEmitter{
+        if (this._sceneEvents) return this._sceneEvents
+        else throw new AddError()
     }
 
     /**
