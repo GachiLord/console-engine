@@ -76,7 +76,7 @@ export default class Engine{
     async render(view: string, frameTime = 100): Promise<void>{
         engineEvents.emit('update', view)
         if (frameTime > 0) await sleep(frameTime) 
-        engineEvents.emit('rendered')
+        engineEvents.emit('updated')
     }
 
     renderSync(view: string){

@@ -3,19 +3,19 @@ import { randomUUID } from 'crypto'
 import EventEmitter from "events"
 import { AddError } from './errors.js'
 import Scene from "./Scene.js"
-import { ICoor, ISpriteState, Style, Layer, ISriteAbilities } from "./typing.js"
+import { ICoor, ISpriteState, Style, Layer, ISriteAbilities, ISceneEvents, ISpriteEvents, ISpriteEventMap } from "./typing.js"
 
 
-class SpriteEvents extends EventEmitter{}
+class SpriteEvents extends EventEmitter implements ISpriteEvents{}
 
 
 export default class Sprite{
     readonly #id = randomUUID()
-    #sceneEvents: EventEmitter|undefined
+    #sceneEvents: ISceneEvents|undefined
     #scene: Scene|undefined
     #layers: Array<Layer>|undefined
+    #layerIndex: undefined|number = undefined
     readonly _spriteEvents = new SpriteEvents()
-    _layerIndex: undefined|number = undefined
     _style: Style
     _state: ISpriteState = {
         show: true,
@@ -48,33 +48,29 @@ export default class Sprite{
         this._spriteEvents.on('update', () => { this.updated() })
     }
 
-    on(eventName: string| symbol, callback = (...e:any[]) => {}){
-        this._spriteEvents.on(eventName, callback)
+    on<E extends keyof ISpriteEventMap>(eventName: E, listener: ISpriteEventMap[E]){
+        this._spriteEvents.on(eventName, listener)
     }
     
-    once(eventName: string| symbol, callback = (...e:any[]) => {}){
-        this._spriteEvents.once(eventName, callback)
+    once<E extends keyof ISpriteEventMap>(eventName: E, listener: ISpriteEventMap[E]){
+        this._spriteEvents.once(eventName, listener)
     }
 
-    trigger(eventName: string| symbol, ...data:any[]){
+    trigger<E extends keyof ISpriteEventMap>(eventName: E, ...data:any[]){
         this._spriteEvents.emit(eventName, ...data)
     }
 
-    off(eventName: string| symbol, listener: (...args: any[]) => void){
+    off<E extends keyof ISpriteEventMap>(eventName: E, listener: (...args: any[]) => void){
         this._spriteEvents.off(eventName, listener)
     }
 
-    removeAllListeners(eventName: string| symbol| undefined = undefined){
+    removeAllListeners<E extends keyof ISpriteEventMap>(eventName?: E){
         this._spriteEvents.removeAllListeners(eventName)
     }
 
-    added(){
+    added(){}
 
-    }
-
-    updated = () => {
-
-    }
+    updated(){}
 
     /**
      * Setting the scene for the sprite.
@@ -86,11 +82,11 @@ export default class Sprite{
      * @param {any} scene
      * @returns {void}
      */
-    setScene(scene: Scene|undefined, layers: Array<Array<Sprite>>|undefined, layerIndex: number|undefined, events: EventEmitter|undefined): void{
+    setScene(scene: Scene|undefined, layers: Array<Array<Sprite>>|undefined, layerIndex: number|undefined, events: ISceneEvents|undefined): void{
         this.#scene = scene
         this.#layers = layers
         this.#sceneEvents = events
-        this._layerIndex = layerIndex
+        this.#layerIndex = layerIndex
         this._spriteEvents.emit('added')
     }
 
@@ -123,7 +119,7 @@ export default class Sprite{
     }
 
     #setState(props: object){
-        if (!this._scene || !this._sceneEvents || !this._layers || this._layerIndex === undefined) throw new AddError()
+        if (!this.#scene || !this.#sceneEvents || !this.#layers || this.#layerIndex === undefined) throw new AddError()
         // check abilities
         const flags = Object.keys(props)
         if (flags.includes('coor') && !this._abilities.canMove) return false
@@ -151,18 +147,27 @@ export default class Sprite{
         return this._abilities
     }
 
+    get id(){
+        return this.#id
+    }
+
     get _scene(): Scene{
-        if (this._scene) return this._scene
+        if (this.#scene) return this.#scene
         else throw new AddError()
     }
 
     get _layers(): Array<Layer>{
-        if (this._layers) return this._layers
+        if (this.#layers) return this.#layers
         else throw new AddError()
     }
 
-    get _sceneEvents(): EventEmitter{
-        if (this._sceneEvents) return this._sceneEvents
+    get _sceneEvents(): ISceneEvents{
+        if (this.#sceneEvents) return this.#sceneEvents
+        else throw new AddError()
+    }
+
+    get _layerIndex(): number{
+        if (this.#layerIndex !== undefined) return this.#layerIndex
         else throw new AddError()
     }
 

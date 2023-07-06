@@ -13,7 +13,7 @@ export default class Player extends Sprite{
     }
 
     added(){
-        this._sceneEvents.on('keypress', async (key: string) => {
+        this._sceneEvents.on('keypress', async key => {
             const curCoors = this._state.coor
             if (key === ' ') {
                 if (this.#onGround){

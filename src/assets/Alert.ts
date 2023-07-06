@@ -1,3 +1,4 @@
+import { EventEmitter } from "node:events";
 import Sprite from "../core/Sprite.js";
 
 
@@ -6,6 +7,7 @@ export default class Alert extends Sprite{
     controlHint = '(w - up, s - down, space - choose)'
     buttons: string[] = ['yes', 'no']
     currentIndex: number = 0
+    alertEvents = new EventEmitter()
     #canFire = true
 
     constructor(text: string, buttons?: string[], initialIndex?: number, controlHint?: string){
@@ -31,7 +33,7 @@ export default class Alert extends Sprite{
                         break
                     case ' ':
                         this.currentIndex = currentIndex
-                        this.trigger('optionChosen', currentIndex)
+                        this.alertEvents.emit('optionChosen', currentIndex)
                         break
                 }
                 this.updateState({sprite: this.#getModal(currentIndex)})
@@ -68,7 +70,7 @@ export default class Alert extends Sprite{
 
         this.show()
         const choice = new Promise( r => {
-            this.once('optionChosen', () => {
+            this.alertEvents.once('optionChosen', () => {
                 r(this.currentIndex)
                 this.hide()
             })

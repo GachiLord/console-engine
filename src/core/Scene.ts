@@ -1,7 +1,7 @@
 import Engine from "./Engine.js"
 import { EventEmitter } from 'node:events';
 import defaultResolution from "../assets/defaultResolution.js";
-import { ICoor, Style, Layer, IUpdateData } from "./typing.js";
+import { ICoor, Style, Layer, IUpdateData, ISceneEvents, keypressData, ISceneEventMap } from "./typing.js";
 import Sprite from "./Sprite.js";
 import GameMap from "./GameMap.js";
 import ViewBuilder from "../lib/ViewBuilder.js";
@@ -9,8 +9,9 @@ import getStyled from "../lib/getStyled.js";
 import { char } from "./typing.js";
 
 
-class SceneEvents extends EventEmitter {}
-const sceneEvents = new SceneEvents()
+
+class SceneEvents extends EventEmitter implements ISceneEvents{}
+const sceneEvents: ISceneEvents = new SceneEvents()
 
 export default class Scene{
     #layers: Array<Layer> = []
@@ -27,7 +28,7 @@ export default class Scene{
      * @name Scene
      */
     constructor(resolution = defaultResolution, renderHandler: Function|undefined = undefined){
-        const keypressHandler = (str: string, key: object) => {
+        const keypressHandler = (str: string, key: keypressData) => {
           sceneEvents.emit('keypress', str, key)
         }
 
@@ -308,15 +309,15 @@ export default class Scene{
         return this.#resolution
     }
 
-    on(eventName: string, callback = (...e:any[]) => {}){
+    on<E extends keyof ISceneEventMap>(eventName: E, callback: ISceneEventMap[E]){
         sceneEvents.on(eventName, callback)
     }
     
-    once(eventName: string, callback = (...e:any[]) => {}){
+    once<E extends keyof ISceneEventMap>(eventName: E, callback: ISceneEventMap[E]){
         sceneEvents.once(eventName, callback)
     }
 
-    trigger(eventName: string, ...data:any[]){
+    trigger<E extends keyof ISceneEventMap>(eventName: E, ...data:any[]){
         sceneEvents.emit(eventName, ...data)
     }
 }
